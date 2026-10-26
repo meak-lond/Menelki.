@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#050505">
+<title>Administration – MENELKI</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
+  <span class="tag">Administration</span>
+</header>
+
+<main>
+  <section id="connexion" hidden>
+    <h1>Connexion</h1>
+    <p class="aide">Espace réservé à l'administrateur de la boutique.</p>
+    <input type="email" id="ad-email" placeholder="E-mail" autocomplete="email" aria-label="E-mail">
+    <input type="password" id="ad-mdp" placeholder="Mot de passe" autocomplete="current-password" aria-label="Mot de passe">
+    <button class="btn" id="ad-entrer">Se connecter</button>
+    <p class="msg" id="ad-msg"></p>
+  </section>
+
+  <section id="liste" hidden>
+    <div class="entete"><h1>Articles</h1><button class="btn petit" id="nouveau">+ Nouvel article</button></div>
+    <input type="search" id="recherche" placeholder="Rechercher un article…" aria-label="Rechercher">
+    <p class="msg" id="msg-liste"></p>
+    <div id="articles"></div>
+    <div class="bas">
+      <a class="btn clair" href="index.html">Voir la boutique</a>
+      <button class="btn clair" id="deco">Se déconnecter</button>
+    </div>
+  </section>
+
+  <section id="formulaire" hidden>
+    <button class="retour" id="f-retour">← Retour aux articles</button>
+    <h1 id="f-titre">Nouvel article</h1>
+
+    <label for="f-nom">Nom *</label>
+    <input type="text" id="f-nom" placeholder="Ex. Hoodie Obsidian" maxlength="80">
+
+    <label for="f-cat">Catégorie *</label>
+    <select id="f-cat">
+      <option value="vetements">Vêtements</option>
+      <option value="chaussures">Chaussures</option>
+      <option value="bijoux">Bijoux</option>
+      <option value="bracelets">Bracelets</option>
+    </select>
+
+    <label for="f-prix">Prix en FCFA *</label>
+    <input type="number" id="f-prix" inputmode="numeric" min="0" placeholder="Ex. 18000">
+
+    <label>Photos</label>
+    <div id="photos" class="photos"></div>
+    <label class="btn clair ajout-photo" for="f-fichiers">+ Ajouter des photos</label>
+    <input type="file" id="f-fichiers" accept="image/*" multiple hidden>
+    <p class="aide">La première photo est la photo principale. Touche une photo pour la mettre en premier, et la croix pour la retirer.</p>
+    <p class="msg ok" id="f-envoi"></p>
+
+    <label for="f-tailles">Tailles</label>
+    <input type="text" id="f-tailles" placeholder="S, M, L, XL">
+    <p class="aide">Sépare par des virgules. Pour des chaussures : 40, 41, 42… Laisse vide s'il n'y a pas de taille.</p>
+
+    <label for="f-couleurs">Couleurs</label>
+    <input type="text" id="f-couleurs" placeholder="Noir, Blanc">
+    <p class="aide">Sépare par des virgules. Laisse vide s'il n'y a qu'une couleur.</p>
+
+    <label for="f-desc">Description</label>
+    <textarea id="f-desc" rows="3" placeholder="Coupe, détails, style…"></textarea>
+
+    <label for="f-mat">Matières et entretien</label>
+    <textarea id="f-mat" rows="2" placeholder="Coton 100 %. Lavage à 30 °C."></textarea>
+
+    <label for="f-stock">Quantité en stock</label>
+    <input type="number" id="f-stock" inputmode="numeric" min="0" placeholder="Vide = illimité">
+
+    <div class="cases">
+      <label class="case"><input type="checkbox" id="f-dispo" checked> Visible sur la boutique</label>
+      <label class="case"><input type="checkbox" id="f-best"> Meilleure vente</label>
+      <label class="case"><input type="checkbox" id="f-promo"> En promotion</label>
+    </div>
+    <div id="bloc-ancien" hidden>
+      <label for="f-ancien">Ancien prix (barré) en FCFA</label>
+      <input type="number" id="f-ancien" inputmode="numeric" min="0" placeholder="Ex. 24000">
+    </div>
+
+    <button class="btn" id="f-save">Enregistrer</button>
+    <button class="btn clair" id="f-annuler">Annuler</button>
+    <button class="btn danger" id="f-suppr" hidden>Supprimer cet article</button>
+    <p class="msg" id="f-msg"></p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
