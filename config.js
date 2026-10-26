@@ -5,7 +5,7 @@
 
 // --- 1. Supabase (comptes, catalogue, commandes) ---
 // Supabase > Project Settings > API : copie « Project URL » et la clé « anon public ».
-var SUPABASE_URL = 'COLLE_ICI_TON_URL';
+var SUPABASE_URL = 'https://ddldwxdnrjbhppcztgiu.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkbGR3eGRucmpiaHBwY3p0Z2l1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNDIyNTgsImV4cCI6MjEwODYxODI1OH0.awkp9F7Y-ZYPC-bYQaLWmBKArsyEKNQ1prOwfbdKE5U' ;
 
 // --- 2. Connexions sociales actives ---
