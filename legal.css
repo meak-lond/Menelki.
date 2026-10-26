@@ -1,0 +1,30 @@
+/* Pages légales et 404 – MENELKI */
+:root{--noir:#050505;--acier:#2b2b2b;--argent:#b7b7b7;--blanc:#f2f2f2;--bord:#222}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--noir);color:var(--blanc);font-family:'Montserrat',system-ui,-apple-system,Arial,sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--blanc)}
+header{padding:14px clamp(16px,4vw,48px);border-bottom:1px solid var(--bord);display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;background:rgba(5,5,5,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.logo{display:flex;align-items:center;gap:12px;font-weight:500;letter-spacing:.5em;font-size:.9rem;text-decoration:none}
+.logo img{height:24px;width:auto}
+.retour{font-size:.64rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--argent);text-decoration:none;border-bottom:1px solid var(--acier);padding-bottom:3px}
+.retour:hover{color:var(--blanc);border-color:var(--blanc)}
+main{max-width:720px;width:100%;margin:0 auto;padding:clamp(40px,7vw,80px) 22px 80px;flex:1}
+h1{font-weight:300;font-size:clamp(1.5rem,5vw,2.4rem);letter-spacing:.16em;text-transform:uppercase;line-height:1.2;margin-bottom:10px}
+.maj{color:#777;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:38px}
+h2{font-size:.78rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;margin:38px 0 12px;padding-bottom:10px;border-bottom:1px solid var(--bord)}
+p,li{font-size:.9rem;color:#cfcfcf;font-weight:300}
+ul{padding-left:20px;margin:8px 0}
+li{margin-bottom:8px}
+strong{font-weight:600;color:var(--blanc)}
+a{text-underline-offset:3px}
+.btn{display:inline-block;margin-top:14px;padding:15px 28px;background:var(--blanc);color:#000;border:1px solid var(--blanc);font-family:inherit;font-weight:600;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;cursor:pointer;text-decoration:none;transition:background .3s,color .3s}
+.btn:hover{background:transparent;color:var(--blanc)}
+footer{border-top:1px solid var(--bord);text-align:center;padding:28px 20px;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:#777}
+footer a{color:var(--argent);margin:0 10px;text-decoration:none}
+footer a:hover{color:var(--blanc)}
+footer p{margin-top:12px;font-size:.62rem;color:#777}
+/* 404 */
+.page-404{align-items:center;justify-content:center;text-align:center;padding:24px}
+.page-404 img{width:min(120px,30vw);opacity:.9;margin-bottom:28px}
+.page-404 .code{font-weight:200;font-size:clamp(4rem,22vw,9rem);letter-spacing:.1em;line-height:1;color:transparent;-webkit-text-stroke:1px var(--argent)}
+.page-404 p{margin:18px auto 28px;max-width:340px}
