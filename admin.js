@@ -250,7 +250,7 @@
   // ----- Navigation -----
   var VUES = [
     { id: 'tableau', nom: 'Tableau de bord', ico: 'tableau' },
-    { id: 'commandes', nom: 'Commandes', ico: 'commandes', bientot: "Ici tu verras toutes les commandes, confirmeras les paiements Wave et Orange Money, et suivras l'expédition et la livraison." },
+    { id: 'commandes', nom: 'Commandes', ico: 'commandes' },
     { id: 'produits', nom: 'Produits', ico: 'produits' },
     { id: 'clients', nom: 'Clients', ico: 'clients', bientot: 'La liste de tes clients, leurs commandes et les abonnés à la newsletter.' },
     { id: 'stats', nom: 'Statistiques', ico: 'stats', bientot: 'Les ventes par jour, par catégorie et par produit, pour décider quoi réapprovisionner.' },
@@ -269,11 +269,12 @@
   function aller(id) {
     var v = VUES.filter(function (x) { return x.id === id; })[0] || VUES[0];
     vueActive = v.id;
-    ['v-tableau', 'v-produits', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
+    ['v-tableau', 'v-produits', 'v-commandes', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
     VUES.forEach(function (x) { $('nav-' + x.id).classList.toggle('actif', x.id === v.id); });
     $('titre-vue').textContent = v.nom;
     try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
     if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
+    else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); chargerCommandes(); }
     else if (v.id === 'produits') { $('v-produits').hidden = false; montrerProd('liste'); chargerArticles(); }
     else { $('bientot-titre').textContent = v.nom; $('bientot-texte').textContent = v.bientot; $('v-bientot').hidden = false; }
     window.scrollTo(0, 0);
@@ -283,7 +284,7 @@
   $('burger').addEventListener('click', function () { $('lateral').classList.add('ouvert'); $('voile').classList.add('ouvert'); });
   $('voile').addEventListener('click', fermerMenu);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { fermerMenu(); } });
-  $('cloche').addEventListener('click', function () { aller('commandes'); });
+  $('cloche').addEventListener('click', function () { filtreCmd = 'en_attente'; aller('commandes'); });
   $('recherche-haut').addEventListener('submit', function (e) {
     e.preventDefault();
     var q = $('rech-haut').value;
@@ -482,7 +483,131 @@
       z.appendChild(l);
     });
   }
-  $('voir-commandes').addEventListener('click', function () { aller('commandes'); });
+  $('voir-commandes').addEventListener('click', function () { filtreCmd = 'tous'; aller('commandes'); });
+
+  // ----- Page Commandes -----
+  var cmdTout = [], profMap = {}, filtreCmd = 'tous';
+  var SUITE = {
+    en_attente: { vers: 'payee', texte: 'Confirmer le paiement', q: 'Confirmer que le paiement de cette commande a bien été reçu ?' },
+    payee: { vers: 'expediee', texte: 'Marquer comme expédiée', q: 'Marquer cette commande comme expédiée ?' },
+    expediee: { vers: 'livree', texte: 'Marquer comme livrée', q: 'Marquer cette commande comme livrée ?' }
+  };
+  function montrerCmd(id) { $('cmd-liste').hidden = (id !== 'liste'); $('cmd-detail').hidden = (id !== 'detail'); window.scrollTo(0, 0); }
+  function nomClient(c) { var p = profMap[c.user_id]; return p ? p.prenom + ' ' + p.nom : 'Client'; }
+  function dateLongue(t) { return new Date(t).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+
+  async function chargerCommandes() {
+    $('msg-cmd').textContent = '';
+    var r = await db.from('commandes').select('*').order('cree_le', { ascending: false }).limit(500);
+    if (r.error) { $('msg-cmd').textContent = 'Impossible de charger les commandes : ' + r.error.message; return; }
+    cmdTout = r.data || [];
+    var p = await db.from('profils').select('user_id,prenom,nom,telephone').limit(1000);
+    profMap = {};
+    ((p && p.data) || []).forEach(function (x) { profMap[x.user_id] = x; });
+    dessinerFiltres(); dessinerCmd();
+  }
+
+  function dessinerFiltres() {
+    var z = $('filtres'); z.textContent = '';
+    var n = { tous: cmdTout.length };
+    cmdTout.forEach(function (c) { n[c.statut] = (n[c.statut] || 0) + 1; });
+    [['tous', 'Toutes'], ['en_attente', 'En attente'], ['payee', 'Payées'], ['expediee', 'Expédiées'], ['livree', 'Livrées'], ['annulee', 'Annulées']].forEach(function (f) {
+      var b = el('button', f[0] === filtreCmd ? 'actif' : '', f[1]);
+      b.appendChild(el('b', '', String(n[f[0]] || 0)));
+      b.addEventListener('click', function () { filtreCmd = f[0]; dessinerFiltres(); dessinerCmd(); });
+      z.appendChild(b);
+    });
+  }
+
+  function dessinerCmd() {
+    var z = $('cmd-zone'); z.textContent = '';
+    var q = $('rech-cmd').value.trim().toLowerCase();
+    var vues = cmdTout.filter(function (c) {
+      if (filtreCmd !== 'tous' && c.statut !== filtreCmd) { return false; }
+      if (!q) { return true; }
+      return ('#' + c.id + ' ' + c.id + ' ' + nomClient(c) + ' ' + (c.telephone || '') + ' ' + (c.adresse || '')).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!vues.length) { z.appendChild(el('p', 'vide', cmdTout.length ? 'Aucune commande ne correspond.' : "Aucune commande pour l'instant. Elles apparaîtront ici dès qu'un client commandera.")); return; }
+    vues.forEach(function (c) {
+      var b = el('button', 'cmd-ligne');
+      var qui = el('div', 'qui', nomClient(c)); qui.appendChild(el('small', '', '#' + c.id)); b.appendChild(qui);
+      b.appendChild(el('div', 'montant', c.total.toLocaleString('fr-FR') + ' FCFA'));
+      b.appendChild(el('div', 'quand', new Date(c.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })));
+      b.appendChild(el('span', 'pill ' + c.statut, STATUTS[c.statut] || c.statut));
+      b.addEventListener('click', function () { ouvrirCmd(c.id); });
+      z.appendChild(b);
+    });
+  }
+  $('rech-cmd').addEventListener('input', dessinerCmd);
+
+  function chiffresTel(t) {
+    var d = String(t || '').replace(/\D/g, '');
+    if (d.length === 10 && d.charAt(0) === '0') { d = '225' + d; }   // numéro ivoirien à 10 chiffres
+    return d;
+  }
+
+  function ouvrirCmd(id, message) {
+    var c = cmdTout.filter(function (x) { return x.id === id; })[0];
+    if (!c) { return; }
+    var z = $('cmd-detail'); z.textContent = '';
+    var re = el('button', 'retour', '← Retour aux commandes'); re.addEventListener('click', function () { montrerCmd('liste'); dessinerFiltres(); dessinerCmd(); });
+    z.appendChild(re);
+    var t = el('div', 'detail-tete'); t.appendChild(el('h2', '', 'Commande #' + c.id)); t.appendChild(el('span', 'pill ' + c.statut, STATUTS[c.statut] || c.statut)); z.appendChild(t);
+    z.appendChild(el('p', 'aide', dateLongue(c.cree_le)));
+
+    var cl = el('div', 'bloc-det'); cl.appendChild(el('h3', '', 'Client'));
+    cl.appendChild(el('p', '', nomClient(c)));
+    cl.appendChild(el('p', '', c.telephone || ''));
+    cl.appendChild(el('p', '', c.adresse || ''));
+    var ct = el('div', 'contacts'), tel = chiffresTel(c.telephone);
+    if (tel) {
+      var a1 = el('a', '', 'Appeler'); a1.href = 'tel:+' + tel; ct.appendChild(a1);
+      var a2 = el('a', '', 'WhatsApp'); a2.href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent('Bonjour, c\'est MENELKI au sujet de votre commande #' + c.id + '.'); a2.target = '_blank'; a2.rel = 'noopener'; ct.appendChild(a2);
+    }
+    cl.appendChild(ct); z.appendChild(cl);
+
+    var ar = el('div', 'bloc-det'); ar.appendChild(el('h3', '', 'Articles'));
+    (Array.isArray(c.articles) ? c.articles : []).forEach(function (l) {
+      var r = el('div', 'art-l');
+      r.appendChild(el('div', 'n', (l.nom || 'Article') + ' × ' + (l.qte || 0)));
+      r.appendChild(el('div', 'm', ((parseInt(l.prix, 10) || 0) * (parseInt(l.qte, 10) || 0)).toLocaleString('fr-FR') + ' FCFA'));
+      var opt = [l.taille ? 'Taille ' + l.taille : '', l.couleur || ''].filter(Boolean).join(' · ');
+      if (opt) { r.appendChild(el('div', 'o', opt)); }
+      ar.appendChild(r);
+    });
+    function ligne(txt, val, fort) { var d = el('div', 'tot-l' + (fort ? ' fort' : '')); d.appendChild(el('span', '', txt)); d.appendChild(el('span', '', val)); ar.appendChild(d); }
+    ligne('Sous-total', c.sous_total.toLocaleString('fr-FR') + ' FCFA');
+    if (c.remise > 0) { ligne('Remise' + (c.code_promo ? ' (' + c.code_promo + ')' : ''), '− ' + c.remise.toLocaleString('fr-FR') + ' FCFA'); }
+    ligne('Total à payer', c.total.toLocaleString('fr-FR') + ' FCFA', true);
+    z.appendChild(ar);
+
+    var msg = el('p', 'msg' + (message ? ' ok' : ''), message || '');
+    var ac = el('div', 'actions-cmd');
+    var suite = SUITE[c.statut];
+    function lancer(vers, question, boutons) {
+      if (!window.confirm(question)) { return; }
+      boutons.forEach(function (b) { b.disabled = true; });
+      db.from('commandes').update({ statut: vers }).eq('id', c.id).select('id').then(function (r) {
+        if (r.error || !(r.data && r.data.length)) {
+          boutons.forEach(function (b) { b.disabled = false; });
+          msg.className = 'msg'; msg.textContent = 'Changement impossible' + (r.error ? ' : ' + r.error.message : '. Vérifie que ton compte est bien administrateur.');
+          return;
+        }
+        c.statut = vers; ouvrirCmd(c.id, 'Statut mis à jour : ' + STATUTS[vers] + '.'); compterEnAttente();
+      });
+    }
+    var btns = [];
+    if (suite) { var b1 = el('button', 'btn', suite.texte); btns.push(b1); b1.addEventListener('click', function () { lancer(suite.vers, suite.q, btns); }); ac.appendChild(b1); }
+    if (c.statut !== 'livree' && c.statut !== 'annulee') {
+      var b2 = el('button', 'btn danger', 'Annuler la commande'); b2.style.marginTop = '0'; btns.push(b2);
+      b2.addEventListener('click', function () { lancer('annulee', 'Annuler la commande #' + c.id + ' ? Les articles seront remis en stock. Cette action est définitive.', btns); });
+      ac.appendChild(b2);
+    }
+    if (c.statut === 'livree') { ac.appendChild(el('p', 'aide', 'Commande terminée.')); }
+    if (c.statut === 'annulee') { ac.appendChild(el('p', 'aide', 'Commande annulée. Les articles ont été remis en stock.')); }
+    z.appendChild(ac); z.appendChild(msg);
+    montrerCmd('detail');
+  }
 
   // ----- Commandes en attente (cloche) -----
   async function compterEnAttente() {
