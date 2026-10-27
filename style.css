@@ -277,7 +277,7 @@ footer{background:#000;border-top:1px solid var(--bord);padding:clamp(48px,7vw,9
 
 /* ===== Fenêtres plein écran ===== */
 #compte-fond,#espace-fond,#profil-fond,#panier-fond,#fiche-fond,#favoris-fond{display:none;position:fixed;inset:0;background:var(--noir);align-items:stretch;justify-content:stretch}
-#panier-fond,#compte-fond{z-index:20}#espace-fond{z-index:21}#profil-fond,#favoris-fond{z-index:22}#fiche-fond{z-index:23}
+#panier-fond,#compte-fond{z-index:20}#espace-fond{z-index:21}#profil-fond,#favoris-fond{z-index:22}#espace-fond.recup{z-index:40}#fiche-fond{z-index:23}
 #compte-fond.open,#espace-fond.open,#profil-fond.open,#panier-fond.open,#fiche-fond.open,#favoris-fond.open{display:flex}
 .open>.compte{animation:monte .5s var(--ease)}
 @keyframes monte{from{opacity:0;transform:translateY(24px)}}

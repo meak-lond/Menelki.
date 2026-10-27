@@ -107,7 +107,10 @@
 
   if (db) {
     db.auth.getSession().then(function (r) { afficherSession(r.data.session); });
-    db.auth.onAuthStateChange(function (evt, session) { afficherSession(session); });
+    db.auth.onAuthStateChange(function (evt, session) {
+      afficherSession(session);
+      if (evt === 'PASSWORD_RECOVERY') { setTimeout(ouvrirNouveauMdp, 0); }
+    });
   }
 
   // ===== Catalogue, panier et commande =====
@@ -517,7 +520,7 @@
     if (r.error) { profilOk = null; return; }
     profilOk = !!r.data;
     profilDonnees = r.data || null;
-    if (!profilOk) { ouvrirProfil(); }
+    if (!profilOk && !modeRecup) { ouvrirProfil(); }
   }
 
   async function validerProfil() {
@@ -565,7 +568,38 @@
   function corps() { var c = $('espace-corps'); c.textContent = ''; return c; }
   function boutonRetour(c) { var b = el('button', 'esp-retour', '← Mon compte'); b.addEventListener('click', vueAccueil); c.appendChild(b); }
   function ouvrirEspace(vue) { if (!utilisateur) { return; } fermer(); $('espace-fond').classList.add('open'); (vue || vueAccueil)(); }
-  function fermerEspace() { $('espace-fond').classList.remove('open'); }
+  function fermerEspace() { $('espace-fond').classList.remove('open'); $('espace-fond').classList.remove('recup'); }
+
+  // ===== Nouveau mot de passe (lien « mot de passe oublié » reçu par e-mail) =====
+  var modeRecup = false;
+  function ouvrirNouveauMdp() {
+    if (!db) { return; }
+    modeRecup = true;
+    fermerProfil();
+    fermer();
+    var c = corps();
+    c.appendChild(el('h3', '', 'Nouveau mot de passe'));
+    c.appendChild(el('p', 'profil-note', "Choisis un nouveau mot de passe d'au moins 8 caractères. Si ton iPhone te propose un mot de passe fort, accepte de l'enregistrer dans ton trousseau."));
+    var a = champ(c, 'password', 'Nouveau mot de passe', ''); a.autocomplete = 'new-password';
+    var b = champ(c, 'password', 'Confirme le mot de passe', ''); b.autocomplete = 'new-password';
+    var voir = el('label', 'esp-case'), cb = el('input'); cb.type = 'checkbox';
+    voir.appendChild(cb); voir.appendChild(document.createTextNode(' Afficher les mots de passe'));
+    cb.addEventListener('change', function () { a.type = cb.checked ? 'text' : 'password'; b.type = a.type; });
+    var etat = el('p', 'esp-etat'), ok = el('button', 'btn', 'Enregistrer');
+    ok.addEventListener('click', async function () {
+      etat.className = 'esp-etat err';
+      if (a.value.length < 8) { etat.textContent = '8 caractères minimum.'; return; }
+      if (a.value !== b.value) { etat.textContent = 'Les deux mots de passe ne sont pas identiques.'; return; }
+      ok.disabled = true;
+      var r = await db.auth.updateUser({ password: a.value });
+      if (r.error) { ok.disabled = false; etat.textContent = 'Impossible de changer le mot de passe : ' + r.error.message; return; }
+      etat.className = 'esp-etat ok'; etat.textContent = 'Mot de passe modifié. Tu es connecté.';
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); } catch (e) {}
+      setTimeout(function () { modeRecup = false; fermerEspace(); }, 1800);
+    });
+    c.appendChild(voir); c.appendChild(ok); c.appendChild(etat);
+    $('espace-fond').classList.add('open'); $('espace-fond').classList.add('recup');
+  }
   async function chargerProfil() {
     if (!db || !utilisateur) { return; }
     var r = await db.from('profils').select('*').eq('user_id', utilisateur.id).maybeSingle();
