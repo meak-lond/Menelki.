@@ -14,30 +14,61 @@
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-<header>
-  <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
-  <span class="tag">Administration</span>
-</header>
-
-<main>
-  <section id="connexion" hidden>
+<section id="connexion" class="solo" hidden>
+  <div class="solo-boite">
+    <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
     <h1>Connexion</h1>
     <p class="aide">Espace réservé à l'administrateur de la boutique.</p>
     <input type="email" id="ad-email" placeholder="E-mail" autocomplete="email" aria-label="E-mail">
     <input type="password" id="ad-mdp" placeholder="Mot de passe" autocomplete="current-password" aria-label="Mot de passe">
     <button class="btn" id="ad-entrer">Se connecter</button>
     <p class="msg" id="ad-msg"></p>
-  </section>
+  </div>
+</section>
 
+<div id="app" hidden>
+  <aside id="lateral" aria-label="Menu">
+    <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
+    <nav id="nav"></nav>
+    <a class="lien-boutique" href="index.html">Voir la boutique ↗</a>
+    <div class="profil-bas">
+      <div class="avatar" id="avatar">A</div>
+      <div class="profil-txt"><strong>Administrateur</strong><span id="admin-email"></span></div>
+      <button id="deco" class="deco" aria-label="Se déconnecter" title="Se déconnecter"></button>
+    </div>
+  </aside>
+  <div id="voile"></div>
+
+  <div class="principal">
+    <header class="haut">
+      <button id="burger" class="icone" aria-label="Ouvrir le menu"></button>
+      <h1 id="titre-vue">Tableau de bord</h1>
+      <form id="recherche-haut" class="recherche-haut" role="search">
+        <input type="search" id="rech-haut" placeholder="Rechercher un article…" aria-label="Rechercher un article">
+      </form>
+      <button id="cloche" class="icone cloche" aria-label="Commandes en attente"><span id="pastille" hidden>0</span></button>
+      <span id="date-jour" class="date-jour"></span>
+    </header>
+
+    <main>
+      <section id="v-tableau" hidden>
+        <p class="sous-titre">Vue d'ensemble des 30 derniers jours, comparée aux 30 jours précédents.</p>
+        <div class="kpis" id="kpis"></div>
+        <p class="msg" id="msg-tableau"></p>
+        <div class="bientot-bloc">Le graphique des ventes, les meilleurs produits et les dernières commandes arrivent aux prochaines étapes.</div>
+      </section>
+
+      <section id="v-bientot" hidden>
+        <h2 id="bientot-titre"></h2>
+        <p class="aide" id="bientot-texte"></p>
+      </section>
+
+      <section id="v-produits" hidden>
   <section id="liste" hidden>
-    <div class="entete"><h1>Articles</h1><button class="btn petit" id="nouveau">+ Nouvel article</button></div>
+    <div class="entete"><h2>Articles</h2><button class="btn petit" id="nouveau">+ Nouvel article</button></div>
     <input type="search" id="recherche" placeholder="Rechercher un article…" aria-label="Rechercher">
     <p class="msg" id="msg-liste"></p>
     <div id="articles"></div>
-    <div class="bas">
-      <a class="btn clair" href="index.html">Voir la boutique</a>
-      <button class="btn clair" id="deco">Se déconnecter</button>
-    </div>
   </section>
 
   <section id="formulaire" hidden>
@@ -97,7 +128,10 @@
     <button class="btn danger" id="f-suppr" hidden>Supprimer cet article</button>
     <p class="msg" id="f-msg"></p>
   </section>
-</main>
+      </section>
+    </main>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>

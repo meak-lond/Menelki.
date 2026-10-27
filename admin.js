@@ -16,7 +16,8 @@
 
   function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) { e.className = cls; } if (txt !== undefined) { e.textContent = txt; } return e; }
   function fcfa(n) { return Number(n).toLocaleString('fr-FR') + ' FCFA'; }
-  function montrer(id) { ['connexion', 'liste', 'formulaire'].forEach(function (x) { $(x).hidden = (x !== id); }); window.scrollTo(0, 0); }
+  function montrer(id) { $('connexion').hidden = (id !== 'connexion'); $('app').hidden = (id !== 'app'); window.scrollTo(0, 0); }
+  function montrerProd(id) { $('liste').hidden = (id !== 'liste'); $('formulaire').hidden = (id !== 'formulaire'); window.scrollTo(0, 0); }
   function listeDe(txt) {
     return txt.split(',').map(function (s) { return s.trim(); }).filter(function (s, i, a) { return s && a.indexOf(s) === i; });
   }
@@ -33,8 +34,11 @@
       montrer('connexion');
       return;
     }
-    montrer('liste');
-    chargerArticles();
+    $('admin-email').textContent = s.data.session.user.email || '';
+    $('avatar').textContent = ((s.data.session.user.email || 'A').charAt(0) || 'A').toUpperCase();
+    montrer('app');
+    aller(location.hash.replace('#', '') || 'tableau');
+    compterEnAttente();
   }
 
   $('ad-entrer').addEventListener('click', async function () {
@@ -46,7 +50,7 @@
     demarrer();
   });
   $('ad-mdp').addEventListener('keydown', function (e) { if (e.key === 'Enter') { $('ad-entrer').click(); } });
-  $('deco').addEventListener('click', async function () { if (db) { await db.auth.signOut(); } montrer('connexion'); });
+  $('deco').addEventListener('click', async function () { if (db) { await db.auth.signOut(); } fermerMenu(); montrer('connexion'); });
 
   // ----- Liste des articles -----
   async function chargerArticles() {
@@ -114,17 +118,17 @@
     $('f-suppr').hidden = (id === null);
     $('f-titre').textContent = id === null ? 'Nouvel article' : "Modifier l'article";
     $('f-save').disabled = false;
-    if (id === null) { remplir({}); montrer('formulaire'); return; }
+    if (id === null) { remplir({}); montrerProd('formulaire'); return; }
     var r = await db.from('produits').select('*').eq('id', id).single();
     if (r.error || !r.data) { $('msg-liste').textContent = "Impossible d'ouvrir cet article."; return; }
     remplir(r.data);
-    montrer('formulaire');
+    montrerProd('formulaire');
   }
 
   $('f-promo').addEventListener('change', function () { $('bloc-ancien').hidden = !this.checked; });
   $('f-retour').addEventListener('click', retourListe);
   $('f-annuler').addEventListener('click', retourListe);
-  function retourListe() { montrer('liste'); chargerArticles(); }
+  function retourListe() { montrerProd('liste'); chargerArticles(); }
 
   // ----- Photos -----
   function dessinerPhotos() {
@@ -207,7 +211,7 @@
     var r = enCours === null ? await db.from('produits').insert(charge) : await db.from('produits').update(charge).eq('id', enCours);
     $('f-save').disabled = false;
     if (r.error) { erreur("Enregistrement impossible : " + r.error.message); return; }
-    montrer('liste');
+    montrerProd('liste');
     await chargerArticles();
     $('msg-liste').className = 'msg ok';
     $('msg-liste').textContent = 'Article enregistré.';
@@ -218,11 +222,142 @@
     if (!window.confirm('Supprimer définitivement cet article ? Pour seulement le cacher, décoche « Visible sur la boutique ».')) { return; }
     var r = await db.from('produits').delete().eq('id', enCours);
     if (r.error) { erreur('Suppression impossible : ' + r.error.message); return; }
-    montrer('liste');
+    montrerProd('liste');
     await chargerArticles();
     $('msg-liste').className = 'msg ok';
     $('msg-liste').textContent = 'Article supprimé.';
   });
+
+  // ----- Icônes -----
+  var ICO = {
+    tableau: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+    commandes: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+    produits: '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/>',
+    clients: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/>',
+    stats: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-8"/><path d="M22 20H2"/>',
+    marketing: '<path d="m3 11 18-7v16L3 13z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+    reglages: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+    burger: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    cloche: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    sortie: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+    argent: '<path d="M12 2v20"/><path d="M17 6.5A4 4 0 0 0 13 5h-2.5a3.5 3.5 0 0 0 0 7h3a3.5 3.5 0 0 1 0 7H10a4 4 0 0 1-4-1.5"/>',
+    panier: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>'
+  };
+  function svg(nom) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[nom] + '</svg>'; }
+  $('burger').innerHTML = svg('burger'); $('cloche').insertAdjacentHTML('afterbegin', svg('cloche')); $('deco').innerHTML = svg('sortie');
+  $('date-jour').textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  // ----- Navigation -----
+  var VUES = [
+    { id: 'tableau', nom: 'Tableau de bord', ico: 'tableau' },
+    { id: 'commandes', nom: 'Commandes', ico: 'commandes', bientot: "Ici tu verras toutes les commandes, confirmeras les paiements Wave et Orange Money, et suivras l'expédition et la livraison." },
+    { id: 'produits', nom: 'Produits', ico: 'produits' },
+    { id: 'clients', nom: 'Clients', ico: 'clients', bientot: 'La liste de tes clients, leurs commandes et les abonnés à la newsletter.' },
+    { id: 'stats', nom: 'Statistiques', ico: 'stats', bientot: 'Les ventes par jour, par catégorie et par produit, pour décider quoi réapprovisionner.' },
+    { id: 'marketing', nom: 'Marketing', ico: 'marketing', bientot: 'Les codes promo, les promotions et les envois aux abonnés.' },
+    { id: 'reglages', nom: 'Réglages', ico: 'reglages', bientot: 'Les réglages de la boutique : livraison, paiement, contacts.' }
+  ];
+  var vueActive = 'tableau';
+  VUES.forEach(function (v) {
+    var b = el('button', 'nav-lien'); b.id = 'nav-' + v.id; b.innerHTML = svg(v.ico);
+    b.appendChild(el('span', '', v.nom));
+    if (v.id === 'commandes') { var nb = el('span', 'nb'); nb.id = 'nav-nb'; nb.hidden = true; b.appendChild(nb); }
+    b.addEventListener('click', function () { aller(v.id); fermerMenu(); });
+    $('nav').appendChild(b);
+  });
+
+  function aller(id) {
+    var v = VUES.filter(function (x) { return x.id === id; })[0] || VUES[0];
+    vueActive = v.id;
+    ['v-tableau', 'v-produits', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
+    VUES.forEach(function (x) { $('nav-' + x.id).classList.toggle('actif', x.id === v.id); });
+    $('titre-vue').textContent = v.nom;
+    try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
+    if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
+    else if (v.id === 'produits') { $('v-produits').hidden = false; montrerProd('liste'); chargerArticles(); }
+    else { $('bientot-titre').textContent = v.nom; $('bientot-texte').textContent = v.bientot; $('v-bientot').hidden = false; }
+    window.scrollTo(0, 0);
+  }
+
+  function fermerMenu() { $('lateral').classList.remove('ouvert'); $('voile').classList.remove('ouvert'); }
+  $('burger').addEventListener('click', function () { $('lateral').classList.add('ouvert'); $('voile').classList.add('ouvert'); });
+  $('voile').addEventListener('click', fermerMenu);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { fermerMenu(); } });
+  $('cloche').addEventListener('click', function () { aller('commandes'); });
+  $('recherche-haut').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = $('rech-haut').value;
+    aller('produits');
+    $('recherche').value = q; dessinerListe();
+  });
+
+  // ----- Tableau de bord : chiffres -----
+  var JOUR = 86400000;
+  function pct(a, b) { return b > 0 ? ((a - b) / b) * 100 : null; }
+  function deltaHtml(a, b) {
+    var d = el('span', 'delta');
+    var p = pct(a, b);
+    if (p === null) { d.textContent = a > 0 ? 'Nouveau' : '—'; return d; }
+    var r = Math.round(p * 10) / 10;
+    d.textContent = (r > 0 ? '▲ +' : r < 0 ? '▼ ' : '') + String(r).replace('.', ',') + ' %';
+    if (r > 0) { d.className += ' hausse'; } else if (r < 0) { d.className += ' baisse'; }
+    return d;
+  }
+  function carte(nom, ico, valeur, unite, a, b) {
+    var k = el('div', 'kpi');
+    var t = el('div', 'kpi-tete'); t.appendChild(el('span', 'kpi-nom', nom));
+    var i = el('span', 'kpi-ico'); i.innerHTML = svg(ico); t.appendChild(i); k.appendChild(t);
+    var v = el('div', 'kpi-val', valeur); if (unite) { v.appendChild(el('small', '', unite)); } k.appendChild(v);
+    var p = el('div', 'kpi-pied');
+    if (a !== null) { p.appendChild(deltaHtml(a, b)); p.appendChild(el('span', 'kpi-vs', 'vs 30 j précédents')); }
+    k.appendChild(p);
+    return k;
+  }
+  function articlesVendus(c) {
+    var n = 0;
+    (Array.isArray(c.articles) ? c.articles : []).forEach(function (l) { n += parseInt(l.qte, 10) || 0; });
+    return n;
+  }
+  function stats(liste) {
+    var ca = 0, ventes = 0, nb = 0, clients = {};
+    liste.forEach(function (c) {
+      if (c.statut === 'annulee') { return; }
+      nb++;
+      if (c.user_id) { clients[c.user_id] = 1; }
+      if (c.statut === 'payee' || c.statut === 'expediee' || c.statut === 'livree') { ca += c.total; ventes += articlesVendus(c); }
+    });
+    return { ca: ca, ventes: ventes, nb: nb, clients: Object.keys(clients).length };
+  }
+  async function chargerTableau() {
+    var z = $('kpis'); $('msg-tableau').textContent = '';
+    if (!z.children.length) {
+      ['Chiffre d\'affaires', 'Ventes', 'Commandes', 'Clients actifs'].forEach(function (n, i) {
+        z.appendChild(carte(n, ['argent', 'panier', 'commandes', 'clients'][i], '…', '', null, null));
+      });
+      z.classList.add('squelette');
+    }
+    var maintenant = Date.now();
+    var debut = new Date(maintenant - 60 * JOUR).toISOString();
+    var r = await db.from('commandes').select('id,total,statut,user_id,articles,cree_le').gte('cree_le', debut).order('cree_le', { ascending: false }).limit(1000);
+    if (r.error) { $('msg-tableau').textContent = 'Impossible de charger les chiffres : ' + r.error.message; return; }
+    var limite = maintenant - 30 * JOUR;
+    var recent = [], avant = [];
+    (r.data || []).forEach(function (c) { (new Date(c.cree_le).getTime() >= limite ? recent : avant).push(c); });
+    var A = stats(recent), B = stats(avant);
+    z.classList.remove('squelette'); z.textContent = '';
+    z.appendChild(carte("Chiffre d'affaires", 'argent', A.ca.toLocaleString('fr-FR'), 'FCFA', A.ca, B.ca));
+    z.appendChild(carte('Ventes', 'panier', A.ventes.toLocaleString('fr-FR'), 'ARTICLES', A.ventes, B.ventes));
+    z.appendChild(carte('Commandes', 'commandes', A.nb.toLocaleString('fr-FR'), '', A.nb, B.nb));
+    z.appendChild(carte('Clients actifs', 'clients', A.clients.toLocaleString('fr-FR'), '', A.clients, B.clients));
+  }
+
+  // ----- Commandes en attente (cloche) -----
+  async function compterEnAttente() {
+    var r = await db.from('commandes').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente');
+    var n = r.count || 0;
+    $('pastille').textContent = n > 99 ? '99+' : n; $('pastille').hidden = !n;
+    $('nav-nb').textContent = n; $('nav-nb').hidden = !n;
+  }
 
   demarrer();
 })();
