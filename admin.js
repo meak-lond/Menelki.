@@ -342,8 +342,15 @@
       });
       z.classList.add('squelette');
     }
-    var maintenant = Date.now();
-    var debut = new Date(maintenant - 90 * JOUR).toISOString();
+    
+var maintenant = Date.now();
+
+var dateDebut = new Date();
+dateDebut.setDate(1);
+dateDebut.setHours(0, 0, 0, 0);
+dateDebut.setMonth(dateDebut.getMonth() - 6);
+
+var debut = dateDebut.toISOString();
     var r = await db.from('commandes').select('id,total,statut,user_id,articles,cree_le').gte('cree_le', debut).order('cree_le', { ascending: false }).limit(1000);
     if (r.error) { $('msg-tableau').textContent = 'Impossible de charger les chiffres : ' + r.error.message; return; }
     cmd90 = r.data || [];
