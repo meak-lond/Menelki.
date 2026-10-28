@@ -179,6 +179,16 @@
           <p class="aide">Ces réglages se modifient dans le fichier <b>config.js</b> de ton dépôt GitHub : ouvre le fichier, touche le crayon, change la valeur entre les guillemets, puis Commit changes.</p>
         </div>
         <div class="bloc-det">
+          <h3>Alertes de commandes</h3>
+          <p class="aide" id="al-etat"></p>
+          <div class="cases">
+            <label class="case"><input type="checkbox" id="al-son"> Son à chaque nouvelle commande</label>
+            <label class="case"><input type="checkbox" id="al-notif"> Notifications du navigateur (quand la page est en arrière-plan)</label>
+          </div>
+          <p class="aide" id="al-notif-aide"></p>
+          <button class="btn petit clair" id="al-test" style="margin-top:14px">Tester l'alerte</button>
+        </div>
+        <div class="bloc-det">
           <h3>Mon compte</h3>
           <p id="rg-email"></p>
           <label for="rg-mdp1">Nouveau mot de passe</label>

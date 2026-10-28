@@ -39,6 +39,7 @@
     montrer('app');
     aller(location.hash.replace('#', '') || 'tableau');
     compterEnAttente();
+    demarrerAlertes();
   }
 
   $('ad-entrer').addEventListener('click', async function () {
@@ -50,7 +51,7 @@
     demarrer();
   });
   $('ad-mdp').addEventListener('keydown', function (e) { if (e.key === 'Enter') { $('ad-entrer').click(); } });
-  $('deco').addEventListener('click', async function () { if (db) { await db.auth.signOut(); } fermerMenu(); montrer('connexion'); });
+  $('deco').addEventListener('click', async function () { arreterAlertes(); if (db) { await db.auth.signOut(); } fermerMenu(); montrer('connexion'); });
 
   // ----- Liste des articles -----
   async function chargerArticles() {
@@ -274,7 +275,7 @@
     $('titre-vue').textContent = v.nom;
     try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
     if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
-    else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); chargerCommandes(); }
+    else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); promesseCmd = chargerCommandes(); }
     else if (v.id === 'clients') { $('v-clients').hidden = false; montrerCli('liste'); chargerClients(); }
     else if (v.id === 'stats') { $('v-stats').hidden = false; chargerStats(); }
     else if (v.id === 'marketing') { $('v-marketing').hidden = false; montrerPromo('liste'); chargerPromos(); }
@@ -560,7 +561,7 @@
   $('voir-commandes').addEventListener('click', function () { filtreCmd = 'tous'; aller('commandes'); });
 
   // ----- Page Commandes -----
-  var cmdTout = [], cmdVues = [], profMap = {}, filtreCmd = 'tous';
+  var cmdTout = [], cmdVues = [], profMap = {}, filtreCmd = 'tous', promesseCmd = null;
   var SUITE = {
     en_attente: { vers: 'payee', texte: 'Confirmer le paiement', q: 'Confirmer que le paiement de cette commande a bien été reçu ?' },
     payee: { vers: 'expediee', texte: 'Marquer comme expédiée', q: 'Marquer cette commande comme expédiée ?' },
@@ -1067,6 +1068,7 @@
     });
     $('rg-score').textContent = pret + ' sur ' + lignes.length + ' réglages prêts';
     var b = $('rg-barre'); b.style.width = '0'; setTimeout(function () { b.style.width = Math.round(pret / lignes.length * 100) + '%'; }, 60);
+    initAlertes();
     db.auth.getSession().then(function (s) { var u = s && s.data && s.data.session; $('rg-email').textContent = u ? 'Connecté : ' + u.user.email : ''; });
   }
   $('rg-mdp-ok').addEventListener('click', async function () {
@@ -1081,12 +1083,140 @@
     $('rg-mdp1').value = ''; $('rg-mdp2').value = ''; m.className = 'msg ok'; m.textContent = 'Mot de passe modifié.';
   });
 
+  // ----- Alertes de commandes en direct -----
+  var vu = { dernierId: 0, canal: null, minuteur: null, etat: '', son: true, notif: false };
+  function pref(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
+  function setPref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  vu.son = pref('mk_son', '1') === '1';
+  vu.notif = pref('mk_notif', '0') === '1';
+
+  // Son généré par le navigateur (aucun fichier). iPhone : il faut avoir touché la page au moins une fois.
+  var audio = null;
+  function debloquerAudio() {
+    try {
+      if (!audio) { var A = window.AudioContext || window.webkitAudioContext; if (A) { audio = new A(); } }
+      if (audio && audio.state === 'suspended') { audio.resume(); }
+    } catch (e) {}
+  }
+  document.addEventListener('pointerdown', debloquerAudio);
+  document.addEventListener('keydown', debloquerAudio);
+  function bip() {
+    if (!vu.son || !audio) { return; }
+    try {
+      if (audio.state === 'suspended') { audio.resume(); }
+      [[880, 0], [1175, 0.16]].forEach(function (n) {
+        var o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime + n[1];
+        o.type = 'sine'; o.frequency.value = n[0];
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.30);
+        o.connect(g); g.connect(audio.destination); o.start(t0); o.stop(t0 + 0.32);
+      });
+    } catch (e) {}
+  }
+
+  // Bulle d'alerte
+  var zoneToasts = document.createElement('div'); zoneToasts.id = 'toasts'; zoneToasts.setAttribute('aria-live', 'polite'); document.body.appendChild(zoneToasts);
+  function toast(titre, texte, action) {
+    var t = el('div', 'toast');
+    var i = el('div', 't-ico'); i.innerHTML = svg('commandes'); t.appendChild(i);
+    t.appendChild(el('b', '', titre));
+    var x = el('button', 't-x', '×'); x.setAttribute('aria-label', 'Fermer'); t.appendChild(x);
+    t.appendChild(el('span', 't-txt', texte));
+    function fermerToast() { t.classList.add('sortie'); setTimeout(function () { if (t.parentNode) { t.parentNode.removeChild(t); } }, 320); }
+    x.addEventListener('click', fermerToast);
+    if (action) { var v = el('button', 't-voir', 'Voir la commande'); v.addEventListener('click', function () { fermerToast(); action(); }); t.appendChild(v); }
+    zoneToasts.appendChild(t);
+    while (zoneToasts.children.length > 4) { zoneToasts.removeChild(zoneToasts.firstChild); }
+    setTimeout(fermerToast, 15000);
+  }
+  function notifierSysteme(titre, corps) {
+    if (!vu.notif || !('Notification' in window) || Notification.permission !== 'granted' || !document.hidden) { return; }
+    try { new Notification(titre, { body: corps, icon: 'icone-512.png', tag: 'menelki-commande' }); } catch (e) {}
+  }
+
+  async function voirCommande(id) {
+    filtreCmd = 'tous'; aller('commandes');
+    try { await promesseCmd; } catch (e) {}
+    ouvrirCmd(id);
+  }
+  function rafraichirVue() {
+    if (vueActive === 'tableau') { chargerTableau(); }
+    else if (vueActive === 'commandes' && !$('cmd-liste').hidden) { chargerCommandes(); }
+  }
+  async function nouvelleCommande(c) {
+    if (!c || !c.id || c.id <= vu.dernierId) { return; }      // déjà signalée (temps réel + vérification régulière)
+    vu.dernierId = c.id;
+    var nom = 'Client';
+    try {
+      if (c.user_id) { var p = await db.from('profils').select('prenom,nom').eq('user_id', c.user_id).maybeSingle(); if (p && p.data) { nom = p.data.prenom + ' ' + (p.data.nom || '').charAt(0) + '.'; } }
+    } catch (e) {}
+    var texte = nom + ' · ' + Number(c.total || 0).toLocaleString('fr-FR') + ' FCFA';
+    toast('Nouvelle commande #' + c.id, texte, function () { voirCommande(c.id); });
+    bip(); notifierSysteme('Nouvelle commande #' + c.id, texte);
+    compterEnAttente(); rafraichirVue();
+  }
+
+  async function verifierNouvelles() {
+    if (!db || !vu.canal) { return; }
+    var r = await db.from('commandes').select('id,total,user_id').gt('id', vu.dernierId).order('id', { ascending: true }).limit(5);
+    if (r && !r.error) { for (var i = 0; i < (r.data || []).length; i++) { await nouvelleCommande(r.data[i]); } }
+  }
+  function majEtatAlertes() {
+    var e = $('al-etat'); if (!e) { return; }
+    e.textContent = ''; var s = el('span', 'etat-direct' + (vu.etat === 'en direct' ? ' ok' : ''), vu.etat === 'en direct' ? 'Alertes en direct actives' : 'Vérification toutes les minutes (le direct n’est pas connecté)');
+    e.appendChild(s);
+  }
+  async function demarrerAlertes() {
+    if (!db || vu.canal) { return; }
+    var d = await db.from('commandes').select('id').order('id', { ascending: false }).limit(1);
+    vu.dernierId = (d && d.data && d.data[0]) ? d.data[0].id : 0;
+    try {
+      vu.canal = db.channel('menelki-commandes')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'commandes' }, function (p) { nouvelleCommande(p.new); })
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'commandes' }, function () { compterEnAttente(); rafraichirVue(); })
+        .subscribe(function (statut) { vu.etat = (statut === 'SUBSCRIBED') ? 'en direct' : ''; majEtatAlertes(); });
+    } catch (e) { vu.canal = {}; }
+    vu.minuteur = setInterval(verifierNouvelles, 60000);          // filet de sécurité
+  }
+  function arreterAlertes() {
+    if (vu.minuteur) { clearInterval(vu.minuteur); vu.minuteur = null; }
+    try { if (vu.canal && db && db.removeChannel) { db.removeChannel(vu.canal); } } catch (e) {}
+    vu.canal = null; vu.etat = '';
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) { verifierNouvelles(); compterEnAttente(); } });
+
+  // Réglages des alertes
+  function initAlertes() {
+    $('al-son').checked = vu.son;
+    var ok = ('Notification' in window);
+    $('al-notif').checked = vu.notif && ok && Notification.permission === 'granted';
+    $('al-notif').disabled = !ok;
+    $('al-notif-aide').textContent = ok ? (Notification.permission === 'denied' ? "Les notifications sont bloquées dans les réglages de ton navigateur pour ce site." : '')
+      : "Sur iPhone, les notifications du navigateur ne sont disponibles que lorsque l'administration est installée sur l'écran d'accueil.";
+    majEtatAlertes();
+  }
+  $('al-son').addEventListener('change', function () { vu.son = this.checked; setPref('mk_son', vu.son ? '1' : '0'); debloquerAudio(); if (vu.son) { bip(); } });
+  $('al-notif').addEventListener('change', async function () {
+    var box = this;
+    if (!box.checked) { vu.notif = false; setPref('mk_notif', '0'); return; }
+    try {
+      var r = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+      vu.notif = (r === 'granted'); box.checked = vu.notif; setPref('mk_notif', vu.notif ? '1' : '0');
+      if (!vu.notif) { $('al-notif-aide').textContent = "Autorisation refusée : tu peux la changer dans les réglages de ton navigateur."; }
+    } catch (e) { box.checked = false; }
+  });
+  $('al-test').addEventListener('click', function () {
+    debloquerAudio();
+    toast('Nouvelle commande #TEST', 'Awa K. · 45 000 FCFA (ceci est un test)', null);
+    bip();
+  });
+
   // ----- Commandes en attente (cloche) -----
   async function compterEnAttente() {
     var r = await db.from('commandes').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente');
     var n = r.count || 0;
     $('pastille').textContent = n > 99 ? '99+' : n; $('pastille').hidden = !n;
     $('nav-nb').textContent = n; $('nav-nb').hidden = !n;
+    document.title = (n ? '(' + n + ') ' : '') + 'Administration – MENELKI';
   }
 
   demarrer();
