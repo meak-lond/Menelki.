@@ -370,9 +370,10 @@ var debut = dateDebut.toISOString();
     } else {
       z.appendChild(carte('Comptes inscrits', 'clients', Number(comptes.count || 0).toLocaleString('fr-FR'), '', null, null));
     }
-    dessinerGraphe();
-    dessinerTop(recent);
-    dessinerRecentes();
+dessinerGraphe();
+dessinerGrapheMensuel();
+dessinerTop(recent);
+dessinerRecentes();
   }
 
   // ----- Graphique des ventes -----
@@ -395,6 +396,95 @@ var debut = dateDebut.toISOString();
       var d = new Date(auj.getTime() - i * JOUR);
       index[cleJour(d)] = jours.length; jours.push({ d: d, v: 0 });
     }
+    
+function dessinerGrapheMensuel() {
+  var z = $('graph-mensuel');
+  if (!z) { return; }
+  z.textContent = '';
+
+  var maintenant = new Date();
+  maintenant.setDate(1);
+  maintenant.setHours(12, 0, 0, 0);
+
+  var mois = [];
+
+  for (var i = 6; i >= 1; i--) {
+    var d = new Date(maintenant);
+    d.setMonth(d.getMonth() - i);
+    mois.push({
+      d: d,
+      v: 0
+    });
+  }
+
+  cmd90.forEach(function (c) {
+    if (!paye(c)) { return; }
+
+    var d = new Date(c.cree_le);
+    var cle = d.getFullYear() + '-' + d.getMonth();
+
+    mois.forEach(function (m) {
+      var cleMois = m.d.getFullYear() + '-' + m.d.getMonth();
+      if (cle === cleMois) {
+        m.v += Number(c.total) || 0;
+      }
+    });
+  });
+
+  var W = z.clientWidth || 600;
+  var H = 230;
+  var pg = 48, pd = 12, ph = 12, pb = 35;
+  var iw = W - pg - pd;
+  var ih = H - ph - pb;
+
+  var max = joliMax(Math.max.apply(null, mois.map(function (m) {
+    return m.v;
+  })));
+
+  var X = function (i) {
+    return pg + (i + 0.5) * iw / mois.length;
+  };
+
+  var Y = function (v) {
+    return ph + ih - (v / max) * ih;
+  };
+
+  var barres = '';
+  var textes = '';
+
+  mois.forEach(function (m, i) {
+    var x = X(i);
+    var y = Y(m.v);
+    var largeur = Math.min(34, iw / mois.length * 0.55);
+    var hauteur = ph + ih - y;
+
+    barres += '<rect x="' + (x - largeur / 2) +
+      '" y="' + y +
+      '" width="' + largeur +
+      '" height="' + hauteur +
+      '" rx="4" fill="#527a58">' +
+      '<title>' + m.d.toLocaleDateString('fr-FR', {
+        month: 'long',
+        year: 'numeric'
+      }) + ' : ' + m.v.toLocaleString('fr-FR') +
+      ' FCFA</title></rect>';
+
+    textes += '<text x="' + x +
+      '" y="' + (H - 10) +
+      '" text-anchor="middle" fill="currentColor" font-size="11">' +
+      m.d.toLocaleDateString('fr-FR', { month: 'short' }) +
+      '</text>';
+  });
+
+  z.innerHTML =
+    '<svg viewBox="0 0 ' + W + ' ' + H +
+    '" width="100%" role="img" aria-label="Chiffre d’affaires mensuel">' +
+    '<line x1="' + pg + '" y1="' + (ph + ih) +
+    '" x2="' + (W - pd) + '" y2="' + (ph + ih) +
+    '" stroke="currentColor" opacity=".25"/>' +
+    barres + textes + '</svg>';
+}
+
     var total = 0;
     cmd90.forEach(function (c) {
       if (!paye(c)) { return; }
