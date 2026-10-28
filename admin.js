@@ -351,11 +351,18 @@
     var recent = [], avant = [];
     cmd90.forEach(function (c) { var t = new Date(c.cree_le).getTime(); if (t >= limite) { recent.push(c); } else if (t >= maintenant - 60 * JOUR) { avant.push(c); } });
     var A = stats(recent), B = stats(avant);
+    // Le nombre de profils est distinct du nombre de clients ayant commandé récemment.
+    var comptes = await db.from('profils').select('user_id', { count: 'exact', head: true });
     z.classList.remove('squelette'); z.textContent = '';
     z.appendChild(carte("Chiffre d'affaires", 'argent', A.ca.toLocaleString('fr-FR'), 'FCFA', A.ca, B.ca));
-    z.appendChild(carte('Ventes', 'panier', A.ventes.toLocaleString('fr-FR'), 'ARTICLES', A.ventes, B.ventes));
+    z.appendChild(carte('Articles vendus', 'panier', A.ventes.toLocaleString('fr-FR'), '', A.ventes, B.ventes));
     z.appendChild(carte('Commandes', 'commandes', A.nb.toLocaleString('fr-FR'), '', A.nb, B.nb));
-    z.appendChild(carte('Clients actifs', 'clients', A.clients.toLocaleString('fr-FR'), '', A.clients, B.clients));
+    z.appendChild(carte('Clients acheteurs', 'clients', A.clients.toLocaleString('fr-FR'), '', A.clients, B.clients));
+    if (comptes.error) {
+      $('msg-tableau').textContent = "Les ventes sont chargées, mais le nombre de comptes inscrits n'est pas accessible : " + comptes.error.message;
+    } else {
+      z.appendChild(carte('Comptes inscrits', 'clients', Number(comptes.count || 0).toLocaleString('fr-FR'), '', null, null));
+    }
     dessinerGraphe();
     dessinerTop(recent);
     dessinerRecentes();

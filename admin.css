@@ -213,3 +213,11 @@ button{font-family:inherit}
 }
 @media(min-width:1100px){.deux{grid-template-columns:1fr 1fr;gap:16px}.deux .carte-bloc{margin-top:16px}.kpis{grid-template-columns:repeat(4,1fr);gap:16px}}
 @media(prefers-reduced-motion:reduce){.kpi{animation:none}#lateral,#voile{transition:none}}
+
+/* Ajustement tableau de bord : 5 indicateurs, sans tasser l'affichage mobile */
+@media (min-width: 760px) {
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) {
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
