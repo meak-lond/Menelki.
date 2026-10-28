@@ -183,6 +183,20 @@ button{font-family:inherit}
 .tot-l.fort{color:var(--blanc);font-weight:600;font-size:.95rem;border-top:1px solid var(--bord);margin-top:10px;padding-top:12px}
 .actions-cmd{display:grid;gap:10px;margin-top:18px}
 .actions-cmd .btn{margin:0}
+/* clients & stats */
+.mini-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.mini{background:var(--carte);border:1px solid var(--bord);padding:12px 10px;text-align:center}
+.mini b{display:block;font-size:1.25rem;font-weight:300}
+.mini span{line-height:1.5;font-size:.54rem;letter-spacing:.14em;text-transform:uppercase;color:var(--doux)}
+#rech-cli{margin-top:6px}
+.news-ligne{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--bord);font-size:.82rem;overflow-wrap:anywhere}
+.news-ligne span{color:var(--doux);font-size:.68rem;white-space:nowrap}
+#cli-news .bloc-tete{align-items:center}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tags .badge{font-size:.58rem}
+.mini-cmd{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bord);font-size:.8rem}
+.mini-cmd small{display:block;color:var(--doux);font-size:.66rem}
+.alerte-stock{color:var(--err)}
 @media(min-width:520px){.kpi-val{font-size:1.7rem}}
 @media(min-width:900px){
   #lateral{transform:none}

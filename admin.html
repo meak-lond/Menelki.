@@ -86,6 +86,43 @@
         <div id="cmd-detail" hidden></div>
       </section>
 
+      <section id="v-clients" hidden>
+        <div id="cli-liste">
+          <div class="filtres" id="cli-onglets" role="group">
+            <button data-o="clients" class="actif">Clients</button><button data-o="news">Newsletter</button>
+          </div>
+          <div id="cli-clients">
+            <div class="mini-kpis" id="cli-kpis"></div>
+            <input type="search" id="rech-cli" placeholder="Nom ou téléphone…" aria-label="Rechercher un client">
+            <p class="msg" id="msg-cli"></p>
+            <div id="cli-zone"></div>
+          </div>
+          <div id="cli-news" hidden>
+            <div class="bloc-tete"><p class="aide" id="news-total"></p><button class="btn petit clair" id="news-copier">Copier les e-mails</button></div>
+            <p class="msg" id="msg-news"></p>
+            <div id="news-zone"></div>
+          </div>
+        </div>
+        <div id="cli-detail" hidden></div>
+      </section>
+
+      <section id="v-stats" hidden>
+        <div class="bloc-tete">
+          <p class="sous-titre" style="margin:0">Analyse de tes ventes (commandes payées, expédiées ou livrées).</p>
+          <div class="periodes" id="periodes-st" role="group" aria-label="Période"><button data-j="30" class="actif">30 j</button><button data-j="90">90 j</button></div>
+        </div>
+        <p class="msg" id="msg-stats"></p>
+        <div class="kpis" id="st-kpis"></div>
+        <div class="deux">
+          <div class="carte-bloc"><div class="bloc-tete"><h3>Ventes par catégorie</h3></div><div id="st-cat"></div></div>
+          <div class="carte-bloc"><div class="bloc-tete"><h3>Ventes par jour de la semaine</h3></div><div id="st-jours"></div></div>
+        </div>
+        <div class="deux">
+          <div class="carte-bloc"><div class="bloc-tete"><h3>Top produits</h3></div><div id="st-top"></div></div>
+          <div class="carte-bloc"><div class="bloc-tete"><h3>À réapprovisionner</h3><span class="bloc-note">stock faible</span></div><div id="st-stock"></div></div>
+        </div>
+      </section>
+
       <section id="v-bientot" hidden>
         <h2 id="bientot-titre"></h2>
         <p class="aide" id="bientot-texte"></p>

@@ -252,8 +252,8 @@
     { id: 'tableau', nom: 'Tableau de bord', ico: 'tableau' },
     { id: 'commandes', nom: 'Commandes', ico: 'commandes' },
     { id: 'produits', nom: 'Produits', ico: 'produits' },
-    { id: 'clients', nom: 'Clients', ico: 'clients', bientot: 'La liste de tes clients, leurs commandes et les abonnés à la newsletter.' },
-    { id: 'stats', nom: 'Statistiques', ico: 'stats', bientot: 'Les ventes par jour, par catégorie et par produit, pour décider quoi réapprovisionner.' },
+    { id: 'clients', nom: 'Clients', ico: 'clients' },
+    { id: 'stats', nom: 'Statistiques', ico: 'stats' },
     { id: 'marketing', nom: 'Marketing', ico: 'marketing', bientot: 'Les codes promo, les promotions et les envois aux abonnés.' },
     { id: 'reglages', nom: 'Réglages', ico: 'reglages', bientot: 'Les réglages de la boutique : livraison, paiement, contacts.' }
   ];
@@ -269,12 +269,14 @@
   function aller(id) {
     var v = VUES.filter(function (x) { return x.id === id; })[0] || VUES[0];
     vueActive = v.id;
-    ['v-tableau', 'v-produits', 'v-commandes', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
+    ['v-tableau', 'v-produits', 'v-commandes', 'v-clients', 'v-stats', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
     VUES.forEach(function (x) { $('nav-' + x.id).classList.toggle('actif', x.id === v.id); });
     $('titre-vue').textContent = v.nom;
     try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
     if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
     else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); chargerCommandes(); }
+    else if (v.id === 'clients') { $('v-clients').hidden = false; montrerCli('liste'); chargerClients(); }
+    else if (v.id === 'stats') { $('v-stats').hidden = false; chargerStats(); }
     else if (v.id === 'produits') { $('v-produits').hidden = false; montrerProd('liste'); chargerArticles(); }
     else { $('bientot-titre').textContent = v.nom; $('bientot-texte').textContent = v.bientot; $('v-bientot').hidden = false; }
     window.scrollTo(0, 0);
@@ -608,6 +610,171 @@
     z.appendChild(ac); z.appendChild(msg);
     montrerCmd('detail');
   }
+
+  // ----- Page Clients -----
+  var cliTout = [], cliCmd = {}, news = [];
+  function montrerCli(id) { $('cli-liste').hidden = (id !== 'liste'); $('cli-detail').hidden = (id !== 'detail'); window.scrollTo(0, 0); }
+
+  async function chargerClients() {
+    $('msg-cli').textContent = '';
+    var p = await db.from('profils').select('*').order('cree_le', { ascending: false }).limit(1000);
+    if (p.error) { $('msg-cli').textContent = 'Impossible de charger les clients : ' + p.error.message; return; }
+    cliTout = p.data || [];
+    var r = await db.from('commandes').select('id,user_id,total,statut,cree_le').order('cree_le', { ascending: false }).limit(1000);
+    cliCmd = {};
+    ((r && r.data) || []).forEach(function (c) { if (c.user_id) { (cliCmd[c.user_id] = cliCmd[c.user_id] || []).push(c); } });
+    var a = await db.from('abonnes').select('*').order('cree_le', { ascending: false }).limit(1000);
+    news = (a && a.data) || [];
+    dessinerCliKpis(); dessinerCli(); dessinerNews();
+  }
+  function depense(uid) { var t = 0; (cliCmd[uid] || []).forEach(function (c) { if (paye(c)) { t += c.total; } }); return t; }
+
+  function dessinerCliKpis() {
+    var z = $('cli-kpis'); z.textContent = '';
+    var lim = Date.now() - 30 * JOUR, nouveaux = 0, marketing = 0;
+    cliTout.forEach(function (c) { if (new Date(c.cree_le).getTime() >= lim) { nouveaux++; } if (c.consent_marketing) { marketing++; } });
+    [[cliTout.length, 'Clients'], [nouveaux, 'Nouveaux'], [marketing, 'Marketing OK']].forEach(function (x) {
+      var m = el('div', 'mini'); m.appendChild(el('b', '', String(x[0]))); m.appendChild(el('span', '', x[1])); z.appendChild(m);
+    });
+  }
+  function dessinerCli() {
+    var z = $('cli-zone'); z.textContent = '';
+    var q = $('rech-cli').value.trim().toLowerCase();
+    var vus = cliTout.filter(function (c) { return !q || (c.prenom + ' ' + c.nom + ' ' + (c.telephone || '')).toLowerCase().indexOf(q) >= 0; })
+      .sort(function (a, b) { return depense(b.user_id) - depense(a.user_id); });
+    if (!vus.length) { z.appendChild(el('p', 'vide', cliTout.length ? 'Aucun client trouvé.' : "Aucun client inscrit pour l'instant.")); return; }
+    vus.forEach(function (c) {
+      var n = (cliCmd[c.user_id] || []).length;
+      var b = el('button', 'cmd-ligne');
+      b.appendChild(el('div', 'qui', c.prenom + ' ' + c.nom));
+      b.appendChild(el('div', 'montant', depense(c.user_id).toLocaleString('fr-FR') + ' FCFA'));
+      b.appendChild(el('div', 'quand', n + ' commande' + (n > 1 ? 's' : '') + ' · inscrit le ' + new Date(c.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })));
+      b.addEventListener('click', function () { ouvrirClient(c); });
+      z.appendChild(b);
+    });
+  }
+  $('rech-cli').addEventListener('input', dessinerCli);
+
+  function ouvrirClient(c) {
+    var z = $('cli-detail'); z.textContent = '';
+    var re = el('button', 'retour', '← Retour aux clients'); re.addEventListener('click', function () { montrerCli('liste'); }); z.appendChild(re);
+    var t = el('div', 'detail-tete'); t.appendChild(el('h2', '', c.prenom + ' ' + c.nom)); z.appendChild(t);
+    z.appendChild(el('p', 'aide', 'Inscrit le ' + new Date(c.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })));
+    var info = el('div', 'bloc-det'); info.appendChild(el('h3', '', 'Coordonnées'));
+    info.appendChild(el('p', '', c.telephone || 'Téléphone non renseigné'));
+    info.appendChild(el('p', '', c.adresse || 'Adresse non renseignée'));
+    var tel = chiffresTel(c.telephone);
+    if (tel) {
+      var ct = el('div', 'contacts');
+      var a1 = el('a', '', 'Appeler'); a1.href = 'tel:+' + tel; ct.appendChild(a1);
+      var a2 = el('a', '', 'WhatsApp'); a2.href = 'https://wa.me/' + tel; a2.target = '_blank'; a2.rel = 'noopener'; ct.appendChild(a2);
+      info.appendChild(ct);
+    }
+    var tg = el('div', 'tags');
+    tg.appendChild(el('span', 'badge', c.consent_marketing ? 'Accepte le marketing' : 'Refuse le marketing'));
+    (c.interets || []).forEach(function (i) { tg.appendChild(el('span', 'badge', i)); });
+    info.appendChild(tg); z.appendChild(info);
+
+    var liste = cliCmd[c.user_id] || [];
+    var bl = el('div', 'bloc-det'); bl.appendChild(el('h3', '', 'Commandes (' + liste.length + ') · ' + depense(c.user_id).toLocaleString('fr-FR') + ' FCFA dépensés'));
+    if (!liste.length) { bl.appendChild(el('p', 'aide', "Aucune commande pour l'instant.")); }
+    liste.forEach(function (o) {
+      var l = el('div', 'mini-cmd'); var g = el('div', '', '#' + o.id + ' · ' + o.total.toLocaleString('fr-FR') + ' FCFA');
+      g.appendChild(el('small', '', new Date(o.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })));
+      l.appendChild(g); l.appendChild(el('span', 'pill ' + o.statut, STATUTS[o.statut] || o.statut)); bl.appendChild(l);
+    });
+    z.appendChild(bl);
+    montrerCli('detail');
+  }
+
+  function dessinerNews() {
+    $('news-total').textContent = news.length + ' abonné' + (news.length > 1 ? 's' : '') + ' à la newsletter';
+    var z = $('news-zone'); z.textContent = '';
+    if (!news.length) { z.appendChild(el('p', 'vide', "Aucun abonné pour l'instant.")); return; }
+    news.forEach(function (a) {
+      var l = el('div', 'news-ligne'); l.appendChild(el('div', '', a.email));
+      l.appendChild(el('span', '', new Date(a.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }))); z.appendChild(l);
+    });
+  }
+  $('news-copier').addEventListener('click', function () {
+    var txt = news.map(function (a) { return a.email; }).join(', ');
+    function ok(m) { $('msg-news').className = 'msg ok'; $('msg-news').textContent = m; }
+    function ko() { $('msg-news').className = 'msg'; $('msg-news').textContent = 'Copie impossible depuis ce navigateur.'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(function () { ok('E-mails copiés.'); }, ko); } else { ko(); }
+  });
+  $('cli-onglets').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) { return; }
+    Array.prototype.forEach.call($('cli-onglets').children, function (x) { x.classList.toggle('actif', x === b); });
+    $('cli-clients').hidden = (b.getAttribute('data-o') !== 'clients'); $('cli-news').hidden = (b.getAttribute('data-o') !== 'news');
+  });
+
+  // ----- Page Statistiques -----
+  var periodeSt = 30;
+  var NOMS_CAT = CATS;
+  function barres(zone, items, vide) {
+    zone.textContent = '';
+    if (!items.length) { zone.appendChild(el('p', 'vide', vide || 'Pas encore de données.')); return; }
+    var m = Math.max.apply(null, items.map(function (x) { return x.val; })) || 1;
+    items.forEach(function (x) {
+      var l = el('div', 'ligne-top'); l.appendChild(el('div', 'nom', x.nom));
+      var ch = el('div', 'chiffres'); ch.innerHTML = x.html; l.appendChild(ch);
+      var b = el('div', 'barre'), i = el('i'); b.appendChild(i); l.appendChild(b); zone.appendChild(l);
+      setTimeout(function () { i.style.width = (x.val > 0 ? Math.max(4, Math.round(x.val / m * 100)) : 0) + '%'; }, 60);
+    });
+  }
+  function fc(n) { return n.toLocaleString('fr-FR') + ' FCFA'; }
+
+  async function chargerStats() {
+    $('msg-stats').textContent = '';
+    var debut = new Date(Date.now() - 90 * JOUR).toISOString();
+    var r = await db.from('commandes').select('id,total,statut,user_id,articles,cree_le').gte('cree_le', debut).order('cree_le', { ascending: false }).limit(1000);
+    if (r.error) { $('msg-stats').textContent = 'Impossible de charger les statistiques : ' + r.error.message; return; }
+    var p = await db.from('produits').select('id,nom,categorie,stock,seuil_stock');
+    var prods = {}; ((p && p.data) || []).forEach(function (x) { prods[x.id] = x; });
+    var lim = Date.now() - periodeSt * JOUR;
+    var liste = (r.data || []).filter(function (c) { return new Date(c.cree_le).getTime() >= lim; });
+
+    var payees = liste.filter(paye), annulees = liste.filter(function (c) { return c.statut === 'annulee'; });
+    var ca = 0; payees.forEach(function (c) { ca += c.total; });
+    var hors = liste.length;                              // toutes les commandes passées
+    var parClient = {}; payees.forEach(function (c) { if (c.user_id) { parClient[c.user_id] = (parClient[c.user_id] || 0) + 1; } });
+    var nbClients = Object.keys(parClient).length, fideles = Object.keys(parClient).filter(function (k) { return parClient[k] >= 2; }).length;
+
+    var z = $('st-kpis'); z.textContent = '';
+    function k(nom, ico, val, unite) { var d = carte(nom, ico, val, unite, null, null); z.appendChild(d); }
+    k('Panier moyen', 'panier', (payees.length ? Math.round(ca / payees.length) : 0).toLocaleString('fr-FR'), 'FCFA');
+    k('Revenu par jour', 'argent', Math.round(ca / periodeSt).toLocaleString('fr-FR'), 'FCFA');
+    k("Taux d'annulation", 'commandes', (hors ? Math.round(annulees.length / hors * 100) : 0) + ' %', '');
+    k('Clients fidèles', 'clients', (nbClients ? Math.round(fideles / nbClients * 100) : 0) + ' %', '');
+
+    var cat = {}, tp = {}, jours = [0, 0, 0, 0, 0, 0, 0];
+    payees.forEach(function (c) {
+      var jr = (new Date(c.cree_le).getDay() + 6) % 7; jours[jr] += c.total;
+      (Array.isArray(c.articles) ? c.articles : []).forEach(function (l) {
+        var q = parseInt(l.qte, 10) || 0, pr = parseInt(l.prix, 10) || 0, pd = prods[l.id];
+        var kc = pd ? pd.categorie : 'autre'; cat[kc] = (cat[kc] || 0) + q * pr;
+        var kn = l.id || l.nom; tp[kn] = tp[kn] || { nom: l.nom || 'Article', q: 0, ca: 0 }; tp[kn].q += q; tp[kn].ca += q * pr;
+      });
+    });
+    barres($('st-cat'), Object.keys(cat).map(function (x) { return { nom: NOMS_CAT[x] || 'Autres', val: cat[x], html: '<b>' + fc(cat[x]) + '</b>' }; }).sort(function (a, b) { return b.val - a.val; }), 'Aucune vente sur la période.');
+    var NJ = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+    barres($('st-jours'), payees.length ? jours.map(function (v, i) { return { nom: NJ[i], val: v, html: '<b>' + fc(v) + '</b>' }; }) : [], 'Aucune vente sur la période.');
+    barres($('st-top'), Object.keys(tp).map(function (x) { return tp[x]; }).sort(function (a, b) { return b.q - a.q; }).slice(0, 8).map(function (x) { return { nom: x.nom, val: x.q, html: '<b>' + x.q + '</b> vendu' + (x.q > 1 ? 's' : '') + ' · ' + fc(x.ca) }; }), 'Aucune vente sur la période.');
+
+    var bas = Object.keys(prods).map(function (x) { return prods[x]; }).filter(function (x) { return x.stock !== null && x.stock !== undefined && x.stock <= (x.seuil_stock === null || x.seuil_stock === undefined ? 3 : x.seuil_stock); }).sort(function (a, b) { return a.stock - b.stock; });
+    var zs = $('st-stock'); zs.textContent = '';
+    if (!bas.length) { zs.appendChild(el('p', 'vide', 'Aucun article en stock faible.')); }
+    bas.slice(0, 10).forEach(function (x) {
+      var l = el('div', 'mini-cmd'); l.appendChild(el('div', '', x.nom));
+      l.appendChild(el('span', 'pill ' + (x.stock === 0 ? 'annulee' : 'en_attente'), x.stock === 0 ? 'Épuisé' : 'Reste ' + x.stock)); zs.appendChild(l);
+    });
+  }
+  $('periodes-st').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) { return; }
+    periodeSt = parseInt(b.getAttribute('data-j'), 10);
+    Array.prototype.forEach.call($('periodes-st').children, function (x) { x.classList.toggle('actif', x === b); });
+    chargerStats();
+  });
 
   // ----- Commandes en attente (cloche) -----
   async function compterEnAttente() {
