@@ -62,16 +62,17 @@
               <button data-j="7">7 j</button><button data-j="30" class="actif">30 j</button><button data-j="90">90 j</button>
             </div>
           </div>
-          <div id="graph" class="graph"></div><div class="carte-bloc" style="margin-top:20px">
-  <div class="bloc-tete">
-    <div>
-      <h3>Chiffre d’affaires par mois</h3>
-      <p class="bloc-total">Comparaison des 6 derniers mois</p>
-    </div>
-  </div>
-  <div id="graph-mensuel" class="graph"></div>
-  <p class="msg" id="msg-mensuel"></p>
-</div>
+          <div id="graph" class="graph"></div>
+        </div>
+        <div class="carte-bloc">
+          <div class="bloc-tete">
+            <div>
+              <h3>Chiffre d’affaires par mois</h3>
+              <p class="bloc-total" style="font-size:.78rem;color:var(--doux)">6 derniers mois, mois en cours inclus</p>
+            </div>
+          </div>
+          <div id="graph-mensuel" class="graph"></div>
+          <p class="msg" id="msg-mensuel"></p>
         </div>
         <div class="deux">
           <div class="carte-bloc">
@@ -129,6 +130,57 @@
         <div class="deux">
           <div class="carte-bloc"><div class="bloc-tete"><h3>Top produits</h3></div><div id="st-top"></div></div>
           <div class="carte-bloc"><div class="bloc-tete"><h3>À réapprovisionner</h3><span class="bloc-note">stock faible</span></div><div id="st-stock"></div></div>
+        </div>
+      </section>
+
+      <section id="v-marketing" hidden>
+        <div id="promo-liste">
+          <div class="entete"><h2>Codes promo</h2><button class="btn petit" id="promo-nouveau">+ Nouveau code</button></div>
+          <p class="aide">Les clients saisissent un code au moment de commander. Le prix est recalculé côté serveur : personne ne peut le falsifier.</p>
+          <p class="msg" id="msg-promo"></p>
+          <div id="promo-zone"></div>
+          <div class="bloc-det"><h3>Idée</h3><p class="aide" style="margin:0">Crée un code BIENVENUE10 (10 %) pour tes nouveaux abonnés, puis envoie-le-leur. Tu retrouves leurs e-mails dans Clients &gt; Newsletter.</p></div>
+        </div>
+        <div id="promo-form" hidden>
+          <button class="retour" id="pf-retour">← Retour aux codes</button>
+          <h2 id="pf-titre">Nouveau code</h2>
+          <label for="pf-code">Code *</label>
+          <input type="text" id="pf-code" maxlength="20" placeholder="Ex. BIENVENUE10" autocapitalize="characters" autocomplete="off">
+          <p class="aide">Lettres et chiffres uniquement. Le code est mis en majuscules.</p>
+          <label for="pf-type">Type de réduction *</label>
+          <select id="pf-type"><option value="pourcentage">Pourcentage (%)</option><option value="montant">Montant fixe (FCFA)</option></select>
+          <label for="pf-valeur" id="pf-valeur-lib">Valeur (%) *</label>
+          <input type="number" id="pf-valeur" inputmode="numeric" min="1" placeholder="Ex. 10">
+          <label for="pf-min">Commande minimum (FCFA)</label>
+          <input type="number" id="pf-min" inputmode="numeric" min="0" placeholder="0 = aucun minimum">
+          <label for="pf-max">Nombre d'utilisations maximum</label>
+          <input type="number" id="pf-max" inputmode="numeric" min="1" placeholder="Vide = illimité">
+          <label for="pf-exp">Valable jusqu'au</label>
+          <input type="date" id="pf-exp">
+          <div class="cases"><label class="case"><input type="checkbox" id="pf-actif" checked> Code actif</label></div>
+          <button class="btn" id="pf-save">Enregistrer</button>
+          <button class="btn clair" id="pf-annuler">Annuler</button>
+          <button class="btn danger" id="pf-suppr" hidden>Supprimer ce code</button>
+          <p class="msg" id="pf-msg"></p>
+        </div>
+      </section>
+
+      <section id="v-reglages" hidden>
+        <div class="bloc-det" style="margin-top:0">
+          <h3>Préparation de la boutique</h3>
+          <p id="rg-score" class="rg-score"></p>
+          <div class="barre"><i id="rg-barre"></i></div>
+          <div id="rg-liste"></div>
+          <p class="aide">Ces réglages se modifient dans le fichier <b>config.js</b> de ton dépôt GitHub : ouvre le fichier, touche le crayon, change la valeur entre les guillemets, puis Commit changes.</p>
+        </div>
+        <div class="bloc-det">
+          <h3>Mon compte</h3>
+          <p id="rg-email"></p>
+          <label for="rg-mdp1">Nouveau mot de passe</label>
+          <input type="password" id="rg-mdp1" autocomplete="new-password" placeholder="8 caractères minimum">
+          <input type="password" id="rg-mdp2" autocomplete="new-password" placeholder="Confirme le mot de passe">
+          <button class="btn" id="rg-mdp-ok">Changer le mot de passe</button>
+          <p class="msg" id="rg-mdp-msg"></p>
         </div>
       </section>
 
