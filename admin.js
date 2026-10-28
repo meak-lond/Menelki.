@@ -560,7 +560,7 @@
   $('voir-commandes').addEventListener('click', function () { filtreCmd = 'tous'; aller('commandes'); });
 
   // ----- Page Commandes -----
-  var cmdTout = [], profMap = {}, filtreCmd = 'tous';
+  var cmdTout = [], cmdVues = [], profMap = {}, filtreCmd = 'tous';
   var SUITE = {
     en_attente: { vers: 'payee', texte: 'Confirmer le paiement', q: 'Confirmer que le paiement de cette commande a bien été reçu ?' },
     payee: { vers: 'expediee', texte: 'Marquer comme expédiée', q: 'Marquer cette commande comme expédiée ?' },
@@ -601,6 +601,9 @@
       if (!q) { return true; }
       return ('#' + c.id + ' ' + c.id + ' ' + nomClient(c) + ' ' + (c.telephone || '') + ' ' + (c.adresse || '')).toLowerCase().indexOf(q) >= 0;
     });
+    cmdVues = vues;
+    var somme = 0; vues.forEach(function (c) { if (c.statut !== 'annulee') { somme += c.total; } });
+    $('cmd-compte').textContent = vues.length + ' commande' + (vues.length > 1 ? 's' : '') + ' affichée' + (vues.length > 1 ? 's' : '') + ' · ' + somme.toLocaleString('fr-FR') + ' FCFA (hors annulées)';
     if (!vues.length) { z.appendChild(el('p', 'vide', cmdTout.length ? 'Aucune commande ne correspond.' : "Aucune commande pour l'instant. Elles apparaîtront ici dès qu'un client commandera.")); return; }
     vues.forEach(function (c) {
       var b = el('button', 'cmd-ligne');
@@ -679,9 +682,124 @@
     }
     if (c.statut === 'livree') { ac.appendChild(el('p', 'aide', 'Commande terminée.')); }
     if (c.statut === 'annulee') { ac.appendChild(el('p', 'aide', 'Commande annulée. Les articles ont été remis en stock.')); }
+    var bi = el('button', 'btn clair', 'Imprimer le bon de livraison'); bi.style.marginTop = '0';
+    bi.addEventListener('click', function () { imprimerBons([c]); });
+    ac.appendChild(bi);
     z.appendChild(ac); z.appendChild(msg);
+
+    var bn = el('div', 'bloc-det note-zone'); bn.appendChild(el('h3', '', 'Note interne'));
+    var bh = el('div', 'bloc-det'); bh.appendChild(el('h3', '', 'Historique'));
+    z.appendChild(bn); z.appendChild(bh);
+    chargerExtras(c, bn, bh);
     montrerCmd('detail');
   }
+
+  // ----- Note interne et historique d'une commande -----
+  var LIB_HIST = { en_attente: 'Remise en attente', payee: 'Paiement confirmé', expediee: 'Commande expédiée', livree: 'Commande livrée', annulee: 'Commande annulée (stock remis)' };
+  function dateCourte(t) { return new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+  async function chargerExtras(c, zn, zh) {
+    var n = await db.from('commandes_notes').select('note,maj_le').eq('commande_id', c.id).maybeSingle();
+    var h = await db.from('commandes_historique').select('statut,cree_le').eq('commande_id', c.id).order('cree_le', { ascending: true });
+    if (n.error || h.error) {
+      var hint = "Option non activée : lance le script « menelki-admin-2 » dans Supabase > SQL Editor.";
+      zn.appendChild(el('p', 'indice-sql', hint)); zh.appendChild(el('p', 'indice-sql', hint));
+      zh.appendChild(chrono(c, []));
+      return;
+    }
+    var ta = el('textarea'); ta.rows = 3; ta.maxLength = 1000; ta.placeholder = 'Ex. Client à rappeler, livraison avant vendredi…';
+    ta.value = (n.data && n.data.note) || '';
+    var ok = el('button', 'btn petit', 'Enregistrer la note'), info = el('p', 'note-info', n.data && n.data.maj_le ? 'Dernière modification : ' + dateCourte(n.data.maj_le) : 'Visible uniquement par toi, jamais par le client.');
+    ok.addEventListener('click', async function () {
+      ok.disabled = true;
+      var r = await db.from('commandes_notes').upsert({ commande_id: c.id, note: ta.value.trim(), maj_le: new Date().toISOString() });
+      ok.disabled = false;
+      info.className = 'note-info'; info.textContent = r.error ? 'Enregistrement impossible : ' + r.error.message : 'Note enregistrée.';
+    });
+    zn.appendChild(ta); zn.appendChild(ok); zn.appendChild(info);
+    zh.appendChild(chrono(c, h.data || []));
+  }
+  function chrono(c, lignes) {
+    var ul = el('ul', 'chrono');
+    function li(titre, t) { var x = el('li', '', titre); x.appendChild(el('small', '', dateCourte(t))); ul.appendChild(x); }
+    li('Commande passée', c.cree_le);
+    lignes.forEach(function (l) { li(LIB_HIST[l.statut] || l.statut, l.cree_le); });
+    return ul;
+  }
+
+  // ----- Export CSV -----
+  function celCsv(v) {
+    v = String(v === null || v === undefined ? '' : v);
+    if (/^[=@]/.test(v) || (/^[+\-]/.test(v) && !/^[+\-]?[\d\s().\-]+$/.test(v))) { v = "'" + v; }   // protège contre les formules Excel
+    return '"' + v.replace(/"/g, '""') + '"';
+  }
+  function exporterCsv(liste) {
+    if (!liste.length) { $('msg-cmd').className = 'msg'; $('msg-cmd').textContent = 'Aucune commande à exporter avec ce filtre.'; return; }
+    var lignes = [['N°', 'Date', 'Client', 'Téléphone', 'Adresse', 'Articles', 'Sous-total (FCFA)', 'Remise (FCFA)', 'Code promo', 'Total (FCFA)', 'Statut']];
+    liste.forEach(function (c) {
+      var arts = (Array.isArray(c.articles) ? c.articles : []).map(function (l) {
+        var opt = [l.taille, l.couleur].filter(Boolean).join(', ');
+        return (l.nom || 'Article') + ' x' + (l.qte || 0) + (opt ? ' (' + opt + ')' : '');
+      }).join(' | ');
+      lignes.push([c.id, new Date(c.cree_le).toLocaleString('fr-FR'), nomClient(c), c.telephone, c.adresse, arts, c.sous_total, c.remise, c.code_promo || '', c.total, STATUTS[c.statut] || c.statut]);
+    });
+    var texte = '﻿' + lignes.map(function (l) { return l.map(celCsv).join(';'); }).join('\r\n');
+    var blob = new Blob([texte], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a'), url = URL.createObjectURL(blob);
+    a.href = url; a.download = 'commandes-menelki-' + cleJour(new Date()) + '.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    $('msg-cmd').className = 'msg ok'; $('msg-cmd').textContent = liste.length + ' commande(s) exportée(s).';
+  }
+  $('cmd-export').addEventListener('click', function () { exporterCsv(cmdVues); });
+
+  // ----- Bon de livraison -----
+  function bonLivraison(c) {
+    var b = el('div', 'bon');
+    var t = el('div', 'bon-tete');
+    var m = el('div', 'bon-marque'); var lg = el('img'); lg.src = 'menelki-symbole-noir.svg'; lg.alt = ''; m.appendChild(lg); m.appendChild(el('span', '', 'MENELKI')); t.appendChild(m);
+    var ti = el('div', 'bon-titre', 'Bon de livraison'); ti.appendChild(el('b', '', 'N° ' + c.id)); ti.appendChild(document.createTextNode(new Date(c.cree_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }))); t.appendChild(ti);
+    b.appendChild(t);
+    var cols = el('div', 'bon-cols');
+    var d1 = el('div'); d1.appendChild(el('h4', '', 'Destinataire')); d1.appendChild(el('div', '', nomClient(c))); d1.appendChild(el('div', '', c.telephone || '')); d1.appendChild(el('div', '', c.adresse || '')); cols.appendChild(d1);
+    var d2 = el('div'); d2.appendChild(el('h4', '', 'Paiement'));
+    var st = c.statut === 'en_attente' ? 'À ENCAISSER : ' + c.total.toLocaleString('fr-FR') + ' FCFA' : c.statut === 'annulee' ? 'COMMANDE ANNULÉE' : 'PAYÉ';
+    d2.appendChild(el('span', 'bon-statut', st));
+    if (c.code_promo) { d2.appendChild(el('div', '', 'Code promo : ' + c.code_promo)); }
+    cols.appendChild(d2); b.appendChild(cols);
+    var tb = el('table'), th = el('thead'), tr = el('tr');
+    [['Qté', ''], ['Article', ''], ['Taille', ''], ['Couleur', ''], ['Prix', 'd']].forEach(function (x) { tr.appendChild(el('th', x[1], x[0])); });
+    th.appendChild(tr); tb.appendChild(th);
+    var tbody = el('tbody');
+    (Array.isArray(c.articles) ? c.articles : []).forEach(function (l) {
+      var r = el('tr');
+      r.appendChild(el('td', '', String(l.qte || 0))); r.appendChild(el('td', '', l.nom || 'Article')); r.appendChild(el('td', '', l.taille || '—')); r.appendChild(el('td', '', l.couleur || '—'));
+      r.appendChild(el('td', 'd', ((parseInt(l.prix, 10) || 0) * (parseInt(l.qte, 10) || 0)).toLocaleString('fr-FR') + ' FCFA'));
+      tbody.appendChild(r);
+    });
+    tb.appendChild(tbody); b.appendChild(tb);
+    var tot = el('div', 'bon-totaux');
+    function l2(a, v, f) { var d = el('div', f ? 'f' : ''); d.appendChild(el('span', '', a)); d.appendChild(el('span', '', v)); tot.appendChild(d); }
+    l2('Sous-total', c.sous_total.toLocaleString('fr-FR') + ' FCFA');
+    if (c.remise > 0) { l2('Remise', '− ' + c.remise.toLocaleString('fr-FR') + ' FCFA'); }
+    l2('Total', c.total.toLocaleString('fr-FR') + ' FCFA', true);
+    b.appendChild(tot);
+    var pied = el('div', 'bon-pied');
+    pied.appendChild(el('span', '', 'Merci pour ta commande. Wear your story.'));
+    pied.appendChild(el('span', '', 'Préparé ☐   Contrôlé ☐   Remis ☐'));
+    b.appendChild(pied);
+    return b;
+  }
+  function imprimerBons(liste) {
+    if (!liste.length) { $('msg-cmd').className = 'msg'; $('msg-cmd').textContent = 'Aucune commande à imprimer avec ce filtre.'; return; }
+    var z = $('impression'); z.textContent = '';
+    liste.slice(0, 50).forEach(function (c) { z.appendChild(bonLivraison(c)); });
+    window.print();
+  }
+  $('cmd-imprimer').addEventListener('click', function () {
+    var aImprimer = cmdVues.filter(function (c) { return c.statut !== 'annulee'; });
+    if (aImprimer.length > 50) { $('msg-cmd').className = 'msg'; $('msg-cmd').textContent = 'Seuls les 50 premiers bons sont imprimés. Filtre par statut pour réduire la liste.'; }
+    imprimerBons(aImprimer);
+  });
 
   // ----- Page Clients -----
   var cliTout = [], cliCmd = {}, news = [];

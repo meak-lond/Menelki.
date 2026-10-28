@@ -306,3 +306,47 @@ body{background:radial-gradient(900px 520px at 85% -8%,rgba(var(--lueur),.11),tr
 .btn:hover{box-shadow:0 0 22px rgba(var(--lueur),.35)}
 input:focus,select:focus,textarea:focus{border-color:rgba(var(--lueur),.6);box-shadow:0 0 14px rgba(var(--lueur),.16)}
 .solo-boite{padding:30px 24px;border:1px solid rgba(var(--lueur),.14);border-radius:18px;background:linear-gradient(160deg,rgba(27,28,34,.82),rgba(11,12,15,.92));box-shadow:0 0 60px rgba(var(--lueur),.10)}
+
+/* ===== Étape C : commandes avancées ===== */
+.barre-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 4px}
+.barre-actions .btn{flex:1 1 150px;justify-content:center}
+#cmd-compte{margin:8px 0 0}
+.note-zone textarea{margin-top:4px;min-height:84px;resize:vertical}
+.note-zone .btn{margin-top:8px}
+.note-info{font-size:.66rem;color:var(--doux);margin-top:6px}
+.chrono{list-style:none;margin:6px 0 0 6px;padding:0 0 0 18px;border-left:1px solid rgba(var(--lueur),.25)}
+.chrono li{position:relative;padding:0 0 14px;font-size:.84rem}
+.chrono li:last-child{padding-bottom:0}
+.chrono li::before{content:"";position:absolute;left:-23px;top:5px;width:9px;height:9px;border-radius:50%;background:#07080a;border:2px solid #eef2f8;box-shadow:0 0 10px rgba(var(--lueur),.8)}
+.chrono li small{display:block;color:var(--doux);font-size:.68rem;margin-top:1px}
+.indice-sql{font-size:.74rem;color:#e8c46a;line-height:1.5}
+
+/* bon de livraison (écran caché, visible à l'impression) */
+#impression{display:none}
+@media print{
+  @page{margin:14mm}
+  html,body{background:#fff!important;color:#000!important}
+  body *{visibility:hidden}
+  #app,#connexion{display:none!important}
+  #impression,#impression *{visibility:visible}
+  #impression{display:block!important;position:static}
+  .bon{font-family:Montserrat,Arial,Helvetica,sans-serif;font-size:11pt;color:#000;page-break-after:always;break-after:page;padding:2mm 0}
+  .bon:last-child{page-break-after:auto;break-after:auto}
+  .bon-tete{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:16px}
+  .bon-marque{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.34em;font-size:15pt}
+  .bon-marque img{height:34px}
+  .bon-titre{text-align:right;font-size:9pt;letter-spacing:.14em;text-transform:uppercase}
+  .bon-titre b{display:block;font-size:14pt;letter-spacing:.05em}
+  .bon-cols{display:flex;gap:18px;margin-bottom:18px}
+  .bon-cols>div{flex:1;border:1px solid #000;padding:10px 12px;font-size:10.5pt;line-height:1.5}
+  .bon-cols h4{font-size:8pt;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px}
+  .bon table{width:100%;border-collapse:collapse;margin-bottom:12px}
+  .bon th{font-size:8pt;letter-spacing:.14em;text-transform:uppercase;text-align:left;border-bottom:2px solid #000;padding:6px 4px}
+  .bon td{padding:8px 4px;border-bottom:1px solid #999;font-size:10.5pt;vertical-align:top}
+  .bon td.d,.bon th.d{text-align:right;white-space:nowrap}
+  .bon-totaux{margin-left:auto;width:55%;font-size:10.5pt}
+  .bon-totaux div{display:flex;justify-content:space-between;padding:3px 0}
+  .bon-totaux .f{border-top:2px solid #000;margin-top:4px;padding-top:6px;font-weight:700;font-size:12pt}
+  .bon-statut{display:inline-block;border:2px solid #000;padding:3px 10px;font-weight:700;letter-spacing:.1em;font-size:10pt;margin-top:4px}
+  .bon-pied{margin-top:26px;border-top:1px solid #000;padding-top:10px;font-size:9.5pt;display:flex;justify-content:space-between;gap:12px}
+}

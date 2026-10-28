@@ -90,6 +90,11 @@
         <div id="cmd-liste">
           <div class="filtres" id="filtres" role="group" aria-label="Filtrer par statut"></div>
           <input type="search" id="rech-cmd" placeholder="N°, client, téléphone…" aria-label="Rechercher une commande">
+          <div class="barre-actions">
+            <button class="btn petit clair" id="cmd-export">Exporter (CSV)</button>
+            <button class="btn petit clair" id="cmd-imprimer">Imprimer les bons</button>
+          </div>
+          <p class="aide" id="cmd-compte"></p>
           <p class="msg" id="msg-cmd"></p>
           <div id="cmd-zone"></div>
         </div>
@@ -258,6 +263,8 @@
     </main>
   </div>
 </div>
+
+<div id="impression" aria-hidden="true"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
