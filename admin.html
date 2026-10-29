@@ -218,7 +218,28 @@
       <section id="v-produits" hidden>
   <section id="liste" hidden>
     <div class="entete"><h2>Articles</h2><button class="btn petit" id="nouveau">+ Nouvel article</button></div>
+    <div class="kpis kpis-prod" id="prod-kpis"></div>
+    <div class="alerte-stock" id="prod-alerte" hidden></div>
+    <div class="filtres" id="prod-filtres" role="group" aria-label="Filtrer les articles"></div>
     <input type="search" id="recherche" placeholder="Rechercher un article…" aria-label="Rechercher">
+    <div class="duo-select">
+      <select id="prod-cat" aria-label="Catégorie">
+        <option value="">Catégories</option>
+        <option value="vetements">Vêtements</option>
+        <option value="chaussures">Chaussures</option>
+        <option value="bijoux">Bijoux</option>
+        <option value="bracelets">Bracelets</option>
+      </select>
+      <select id="prod-tri" aria-label="Trier">
+        <option value="recent">Plus récents</option>
+        <option value="nom">Nom (A à Z)</option>
+        <option value="prix_asc">Prix croissant</option>
+        <option value="prix_desc">Prix décroissant</option>
+        <option value="stock">Stock le plus bas</option>
+      </select>
+    </div>
+    <div class="barre-actions"><button class="btn petit clair" id="prod-export">Exporter le stock (CSV)</button></div>
+    <p class="aide" id="prod-compte"></p>
     <p class="msg" id="msg-liste"></p>
     <div id="articles"></div>
   </section>
@@ -265,6 +286,10 @@
     <label for="f-stock">Quantité en stock</label>
     <input type="number" id="f-stock" inputmode="numeric" min="0" placeholder="Vide = illimité">
 
+    <label for="f-seuil">Alerte « stock bas » à partir de</label>
+    <input type="number" id="f-seuil" inputmode="numeric" min="0" placeholder="3">
+    <p class="aide">Quand la quantité descend à ce chiffre ou moins, l'article est signalé « Stock bas ».</p>
+
     <div class="cases">
       <label class="case"><input type="checkbox" id="f-dispo" checked> Visible sur la boutique</label>
       <label class="case"><input type="checkbox" id="f-best"> Meilleure vente</label>
@@ -277,6 +302,7 @@
 
     <button class="btn" id="f-save">Enregistrer</button>
     <button class="btn clair" id="f-annuler">Annuler</button>
+    <button class="btn clair" id="f-dupli" hidden>Dupliquer cet article</button>
     <button class="btn danger" id="f-suppr" hidden>Supprimer cet article</button>
     <p class="msg" id="f-msg"></p>
   </section>

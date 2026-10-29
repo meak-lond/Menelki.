@@ -379,3 +379,27 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--lueur),.6);box-s
 .citation{border-left:2px solid rgba(var(--lueur),.5);padding:2px 0 2px 14px;margin-top:10px;font-size:.88rem;color:var(--blanc);white-space:pre-wrap;overflow-wrap:anywhere}
 .motif-ret{font-size:1rem;font-weight:500}
 .cmd-liee .art-l{padding:8px 0}
+
+/* ===== Étape D : produits avancés ===== */
+.kpis-prod{margin-bottom:14px}
+.kpis-prod .kpi-val{font-size:1.2rem}
+.alerte-stock{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;margin-bottom:12px;border:1px solid rgba(240,170,60,.55);background:rgba(240,170,60,.07);box-shadow:0 0 18px rgba(240,170,60,.14);font-size:.78rem}
+.alerte-stock b{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#f0aa3c}
+.alerte-stock span{color:var(--argent);flex:1;min-width:120px}
+.alerte-stock .lien{background:none;border:none;border-bottom:1px solid currentColor;color:var(--blanc);font:inherit;font-size:.72rem;letter-spacing:.08em;cursor:pointer;padding:0 0 1px}
+.duo-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.duo-select select{margin:0;min-width:0}
+.badge.orange{border-color:#f0aa3c;color:#f0aa3c}
+.nb.nb-orange{background:#f0aa3c!important;color:#000!important}
+.art-carte{border-bottom:1px solid var(--bord);padding-bottom:12px}
+.art-carte .art{border-bottom:none;padding-bottom:6px}
+.art-carte.masque .mini,.art-carte.masque .nom{opacity:.55}
+.art-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:66px}
+.art-actions .btn.petit{flex:0 0 auto;padding:9px 12px;font-size:.62rem;margin:0}
+.stepper{display:inline-flex;align-items:stretch;border:1px solid var(--acier);border-radius:20px;overflow:hidden;margin-right:2px}
+.stepper button{background:none;border:none;color:var(--blanc);font:inherit;font-size:1rem;min-width:40px;height:38px;cursor:pointer;padding:0 10px}
+.stepper button.val{min-width:54px;font-size:.78rem;font-weight:600;border-left:1px solid var(--bord);border-right:1px solid var(--bord)}
+.stepper button:disabled{opacity:.3;cursor:default}
+.stepper.bas{border-color:#f0aa3c;box-shadow:0 0 14px rgba(240,170,60,.25)}
+.stepper.epuise{border-color:var(--err);box-shadow:0 0 14px rgba(255,90,90,.2)}
+@media(max-width:400px){.art-actions{padding-left:0}}
