@@ -368,3 +368,14 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--lueur),.6);box-s
 .etat-direct::before{content:"";width:9px;height:9px;border-radius:50%;background:#8d93a0}
 .etat-direct.ok::before{background:#8fd19e;box-shadow:0 0 10px #8fd19e}
 @media(prefers-reduced-motion:reduce){.toast{animation:none}}
+
+/* ===== Étape B : retours ===== */
+.pill.nouveau{color:#e8c46a;border-color:rgba(232,196,106,.4);background:rgba(232,196,106,.10);box-shadow:0 0 12px rgba(232,196,106,.22)}
+.pill.en_cours{color:#9cc3ff;border-color:rgba(156,195,255,.4);background:rgba(156,195,255,.10);box-shadow:0 0 12px rgba(156,195,255,.22)}
+.pill.accepte{color:var(--ok);border-color:rgba(143,209,158,.4);background:rgba(143,209,158,.10);box-shadow:0 0 12px rgba(143,209,158,.22)}
+.pill.refuse{color:var(--err);border-color:rgba(255,154,144,.4);background:rgba(255,154,144,.10);box-shadow:0 0 12px rgba(255,154,144,.20)}
+.pill.termine{color:var(--ok);border-color:rgba(143,209,158,.4);background:rgba(143,209,158,.16);box-shadow:0 0 12px rgba(143,209,158,.25)}
+#ret-compte{margin:8px 0 0}
+.citation{border-left:2px solid rgba(var(--lueur),.5);padding:2px 0 2px 14px;margin-top:10px;font-size:.88rem;color:var(--blanc);white-space:pre-wrap;overflow-wrap:anywhere}
+.motif-ret{font-size:1rem;font-weight:500}
+.cmd-liee .art-l{padding:8px 0}

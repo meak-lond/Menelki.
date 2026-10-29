@@ -39,6 +39,7 @@
     montrer('app');
     aller(location.hash.replace('#', '') || 'tableau');
     compterEnAttente();
+    compterRetours();
     demarrerAlertes();
   }
 
@@ -242,6 +243,7 @@
     cloche: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
     sortie: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
     argent: '<path d="M12 2v20"/><path d="M17 6.5A4 4 0 0 0 13 5h-2.5a3.5 3.5 0 0 0 0 7h3a3.5 3.5 0 0 1 0 7H10a4 4 0 0 1-4-1.5"/>',
+    retours: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
     panier: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>'
   };
   function svg(nom) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + ICO[nom] + '</svg>'; }
@@ -252,6 +254,7 @@
   var VUES = [
     { id: 'tableau', nom: 'Tableau de bord', ico: 'tableau' },
     { id: 'commandes', nom: 'Commandes', ico: 'commandes' },
+    { id: 'retours', nom: 'Retours', ico: 'retours' },
     { id: 'produits', nom: 'Produits', ico: 'produits' },
     { id: 'clients', nom: 'Clients', ico: 'clients' },
     { id: 'stats', nom: 'Statistiques', ico: 'stats' },
@@ -263,6 +266,7 @@
     var b = el('button', 'nav-lien'); b.id = 'nav-' + v.id; b.innerHTML = svg(v.ico);
     b.appendChild(el('span', '', v.nom));
     if (v.id === 'commandes') { var nb = el('span', 'nb'); nb.id = 'nav-nb'; nb.hidden = true; b.appendChild(nb); }
+    if (v.id === 'retours') { var nr = el('span', 'nb'); nr.id = 'nav-nb-ret'; nr.hidden = true; b.appendChild(nr); }
     b.addEventListener('click', function () { aller(v.id); fermerMenu(); });
     $('nav').appendChild(b);
   });
@@ -270,12 +274,13 @@
   function aller(id) {
     var v = VUES.filter(function (x) { return x.id === id; })[0] || VUES[0];
     vueActive = v.id;
-    ['v-tableau', 'v-produits', 'v-commandes', 'v-clients', 'v-stats', 'v-marketing', 'v-reglages', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
+    ['v-tableau', 'v-produits', 'v-commandes', 'v-retours', 'v-clients', 'v-stats', 'v-marketing', 'v-reglages', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
     VUES.forEach(function (x) { $('nav-' + x.id).classList.toggle('actif', x.id === v.id); });
     $('titre-vue').textContent = v.nom;
     try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
     if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
     else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); promesseCmd = chargerCommandes(); }
+    else if (v.id === 'retours') { $('v-retours').hidden = false; montrerRet('liste'); promesseRet = chargerRetours(); }
     else if (v.id === 'clients') { $('v-clients').hidden = false; montrerCli('liste'); chargerClients(); }
     else if (v.id === 'stats') { $('v-stats').hidden = false; chargerStats(); }
     else if (v.id === 'marketing') { $('v-marketing').hidden = false; montrerPromo('liste'); chargerPromos(); }
@@ -802,6 +807,133 @@
     imprimerBons(aImprimer);
   });
 
+  // ----- Page Retours -----
+  var retTout = [], retVues = [], filtreRet = 'tous', promesseRet = null;
+  var STATUTS_RET = { nouveau: 'Nouveau', en_cours: 'En cours', accepte: 'Accepté', refuse: 'Refusé', termine: 'Terminé' };
+  var SUITE_RET = {
+    nouveau: [['en_cours', 'Prendre en charge', 'Marquer cette demande comme prise en charge ?', 'btn'], ['accepte', 'Accepter le retour', 'Accepter cette demande de retour ?', 'btn clair'], ['refuse', 'Refuser le retour', 'Refuser cette demande de retour ?', 'btn danger']],
+    en_cours: [['accepte', 'Accepter le retour', 'Accepter cette demande de retour ?', 'btn'], ['refuse', 'Refuser le retour', 'Refuser cette demande de retour ?', 'btn danger']],
+    accepte: [['termine', 'Marquer comme terminé', "Le retour est terminé (article reçu, remboursement ou échange fait) ?", 'btn']]
+  };
+  function montrerRet(id) { $('ret-liste').hidden = (id !== 'liste'); $('ret-detail').hidden = (id !== 'detail'); window.scrollTo(0, 0); }
+
+  async function chargerRetours() {
+    $('msg-ret').className = 'msg'; $('msg-ret').textContent = '';
+    var r = await db.from('retours').select('*, commandes(id,total,statut,telephone,adresse,articles,cree_le)').order('cree_le', { ascending: false }).limit(300);
+    if (r.error) { $('msg-ret').textContent = 'Impossible de charger les retours : ' + r.error.message; return; }
+    retTout = r.data || [];
+    var ids = retTout.map(function (x) { return x.user_id; }).filter(function (x, i, a) { return x && a.indexOf(x) === i; });
+    profMap = profMap || {};
+    if (ids.length) {
+      var p = await db.from('profils').select('user_id,prenom,nom,telephone').in('user_id', ids);
+      ((p && p.data) || []).forEach(function (x) { profMap[x.user_id] = x; });
+    }
+    dessinerFiltresRet(); dessinerRet(); compterRetours();
+  }
+  function nomRet(r) { var p = profMap[r.user_id]; return p ? p.prenom + ' ' + p.nom : 'Client'; }
+
+  function dessinerFiltresRet() {
+    var z = $('ret-filtres'); z.textContent = '';
+    var n = { tous: retTout.length };
+    retTout.forEach(function (c) { n[c.statut] = (n[c.statut] || 0) + 1; });
+    [['tous', 'Toutes'], ['nouveau', 'Nouvelles'], ['en_cours', 'En cours'], ['accepte', 'Acceptées'], ['refuse', 'Refusées'], ['termine', 'Terminées']].forEach(function (f) {
+      var b = el('button', f[0] === filtreRet ? 'actif' : '', f[1]); b.appendChild(el('b', '', String(n[f[0]] || 0)));
+      b.addEventListener('click', function () { filtreRet = f[0]; dessinerFiltresRet(); dessinerRet(); });
+      z.appendChild(b);
+    });
+  }
+  function dessinerRet() {
+    var z = $('ret-zone'); z.textContent = '';
+    var q = $('rech-ret').value.trim().toLowerCase();
+    var vues = retTout.filter(function (r) {
+      if (filtreRet !== 'tous' && r.statut !== filtreRet) { return false; }
+      return !q || ('#' + r.commande_id + ' ' + r.commande_id + ' ' + nomRet(r) + ' ' + r.motif + ' ' + (r.message || '')).toLowerCase().indexOf(q) >= 0;
+    });
+    retVues = vues;
+    $('ret-compte').textContent = vues.length + ' demande' + (vues.length > 1 ? 's' : '') + ' affichée' + (vues.length > 1 ? 's' : '');
+    if (!vues.length) { z.appendChild(el('p', 'vide', retTout.length ? 'Aucune demande ne correspond.' : "Aucune demande de retour pour l'instant. Elles apparaîtront ici quand un client en enverra une depuis son espace.")); return; }
+    vues.forEach(function (r) {
+      var b = el('button', 'cmd-ligne');
+      var qui = el('div', 'qui', nomRet(r)); qui.appendChild(el('small', '', 'commande #' + r.commande_id)); b.appendChild(qui);
+      b.appendChild(el('span', 'pill ' + r.statut, STATUTS_RET[r.statut] || r.statut));
+      b.appendChild(el('div', 'quand', r.motif + ' · ' + ilY(r.cree_le)));
+      b.addEventListener('click', function () { ouvrirRet(r.id); });
+      z.appendChild(b);
+    });
+  }
+  $('rech-ret').addEventListener('input', dessinerRet);
+
+  function ouvrirRet(id, message) {
+    var r = retTout.filter(function (x) { return x.id === id; })[0];
+    if (!r) { return; }
+    var cmd = r.commandes || null;
+    var z = $('ret-detail'); z.textContent = '';
+    var re = el('button', 'retour', '← Retour aux demandes'); re.addEventListener('click', function () { montrerRet('liste'); dessinerFiltresRet(); dessinerRet(); }); z.appendChild(re);
+    var t = el('div', 'detail-tete'); t.appendChild(el('h2', '', 'Retour #' + r.id)); t.appendChild(el('span', 'pill ' + r.statut, STATUTS_RET[r.statut] || r.statut)); z.appendChild(t);
+    z.appendChild(el('p', 'aide', 'Demande envoyée le ' + dateCourte(r.cree_le)));
+
+    var bc = el('div', 'bloc-det'); bc.appendChild(el('h3', '', 'Client'));
+    bc.appendChild(el('p', '', nomRet(r)));
+    var tel = chiffresTel((cmd && cmd.telephone) || (profMap[r.user_id] && profMap[r.user_id].telephone));
+    if (cmd && cmd.telephone) { bc.appendChild(el('p', '', cmd.telephone)); }
+    if (cmd && cmd.adresse) { bc.appendChild(el('p', '', cmd.adresse)); }
+    if (tel) {
+      var ct = el('div', 'contacts');
+      var a1 = el('a', '', 'Appeler'); a1.href = 'tel:+' + tel; ct.appendChild(a1);
+      var a2 = el('a', '', 'WhatsApp'); a2.href = 'https://wa.me/' + tel + '?text=' + encodeURIComponent("Bonjour, c'est MENELKI au sujet de votre demande de retour pour la commande #" + r.commande_id + '.'); a2.target = '_blank'; a2.rel = 'noopener'; ct.appendChild(a2);
+      bc.appendChild(ct);
+    }
+    z.appendChild(bc);
+
+    var bd = el('div', 'bloc-det'); bd.appendChild(el('h3', '', 'Demande'));
+    bd.appendChild(el('p', 'motif-ret', r.motif));
+    if (r.message) { bd.appendChild(el('div', 'citation', r.message)); } else { bd.appendChild(el('p', 'aide', 'Aucun message du client.')); }
+    z.appendChild(bd);
+
+    var bo = el('div', 'bloc-det cmd-liee'); bo.appendChild(el('h3', '', 'Commande concernée'));
+    if (cmd) {
+      var tete = el('div', 'mini-cmd'); var g = el('div', '', '#' + cmd.id + ' · ' + Number(cmd.total).toLocaleString('fr-FR') + ' FCFA'); g.appendChild(el('small', '', dateCourte(cmd.cree_le))); tete.appendChild(g);
+      tete.appendChild(el('span', 'pill ' + cmd.statut, STATUTS[cmd.statut] || cmd.statut)); bo.appendChild(tete);
+      (Array.isArray(cmd.articles) ? cmd.articles : []).forEach(function (l) {
+        var x = el('div', 'art-l'); x.appendChild(el('div', 'n', (l.nom || 'Article') + ' × ' + (l.qte || 0)));
+        x.appendChild(el('div', 'm', ((parseInt(l.prix, 10) || 0) * (parseInt(l.qte, 10) || 0)).toLocaleString('fr-FR') + ' FCFA'));
+        var opt = [l.taille ? 'Taille ' + l.taille : '', l.couleur || ''].filter(Boolean).join(' · '); if (opt) { x.appendChild(el('div', 'o', opt)); }
+        bo.appendChild(x);
+      });
+      var vc = el('button', 'btn clair petit', 'Voir la commande'); vc.style.marginTop = '12px'; vc.addEventListener('click', function () { voirCommande(cmd.id); }); bo.appendChild(vc);
+    } else { bo.appendChild(el('p', 'aide', 'Commande introuvable.')); }
+    z.appendChild(bo);
+
+    var msg = el('p', 'msg' + (message ? ' ok' : ''), message || '');
+    var ac = el('div', 'actions-cmd'), btns = [];
+    (SUITE_RET[r.statut] || []).forEach(function (a) {
+      var b = el('button', a[3], a[1]); if (a[3].indexOf('danger') >= 0) { b.style.marginTop = '0'; } btns.push(b);
+      b.addEventListener('click', function () {
+        if (!window.confirm(a[2])) { return; }
+        btns.forEach(function (x) { x.disabled = true; });
+        db.from('retours').update({ statut: a[0] }).eq('id', r.id).select('id').then(function (res) {
+          if (res.error || !(res.data && res.data.length)) {
+            btns.forEach(function (x) { x.disabled = false; });
+            msg.className = 'msg'; msg.textContent = 'Changement impossible' + (res.error ? ' : ' + res.error.message : '. Vérifie que ton compte est bien administrateur.'); return;
+          }
+          r.statut = a[0]; ouvrirRet(r.id, 'Statut mis à jour : ' + STATUTS_RET[a[0]] + '.'); compterRetours();
+        });
+      });
+      ac.appendChild(b);
+    });
+    if (r.statut === 'refuse') { ac.appendChild(el('p', 'aide', 'Demande refusée. Pense à prévenir le client.')); }
+    if (r.statut === 'termine') { ac.appendChild(el('p', 'aide', 'Retour terminé.')); }
+    if (r.statut === 'accepte') { ac.appendChild(el('p', 'aide', "Le stock n'est pas modifié automatiquement : si l'article revient en bon état, ajuste sa quantité dans Produits.")); }
+    z.appendChild(ac); z.appendChild(msg);
+    montrerRet('detail');
+  }
+
+  async function compterRetours() {
+    var r = await db.from('retours').select('id', { count: 'exact', head: true }).eq('statut', 'nouveau');
+    var n = (r && r.count) || 0, b = $('nav-nb-ret');
+    if (b) { b.textContent = n; b.hidden = !n; }
+  }
+
   // ----- Page Clients -----
   var cliTout = [], cliCmd = {}, news = [];
   function montrerCli(id) { $('cli-liste').hidden = (id !== 'liste'); $('cli-detail').hidden = (id !== 'detail'); window.scrollTo(0, 0); }
@@ -931,11 +1063,14 @@
     var parClient = {}; payees.forEach(function (c) { if (c.user_id) { parClient[c.user_id] = (parClient[c.user_id] || 0) + 1; } });
     var nbClients = Object.keys(parClient).length, fideles = Object.keys(parClient).filter(function (k) { return parClient[k] >= 2; }).length;
 
+    var rets = await db.from('retours').select('id', { count: 'exact', head: true }).gte('cree_le', new Date(lim).toISOString());
+    var nbRet = (rets && rets.count) || 0;
     var z = $('st-kpis'); z.textContent = '';
     function k(nom, ico, val, unite) { var d = carte(nom, ico, val, unite, null, null); z.appendChild(d); }
     k('Panier moyen', 'panier', (payees.length ? Math.round(ca / payees.length) : 0).toLocaleString('fr-FR'), 'FCFA');
     k('Revenu par jour', 'argent', Math.round(ca / periodeSt).toLocaleString('fr-FR'), 'FCFA');
     k("Taux d'annulation", 'commandes', (hors ? Math.round(annulees.length / hors * 100) : 0) + ' %', '');
+    k('Demandes de retour', 'retours', String(nbRet), (payees.length ? Math.round(nbRet / payees.length * 100) + ' %' : ''));
     k('Clients fidèles', 'clients', (nbClients ? Math.round(fideles / nbClients * 100) : 0) + ' %', '');
 
     var cat = {}, tp = {}, jours = [0, 0, 0, 0, 0, 0, 0];
@@ -1084,7 +1219,7 @@
   });
 
   // ----- Alertes de commandes en direct -----
-  var vu = { dernierId: 0, canal: null, minuteur: null, etat: '', son: true, notif: false };
+  var vu = { dernierId: 0, dernierRet: 0, canal: null, minuteur: null, etat: '', son: true, notif: false };
   function pref(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
   function setPref(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   vu.son = pref('mk_son', '1') === '1';
@@ -1155,8 +1290,21 @@
     compterEnAttente(); rafraichirVue();
   }
 
+  async function nouveauRetour(r) {
+    if (!r || !r.id || r.id <= vu.dernierRet) { return; }
+    vu.dernierRet = r.id;
+    var nom = 'Client';
+    try { if (r.user_id) { var p = await db.from('profils').select('prenom,nom').eq('user_id', r.user_id).maybeSingle(); if (p && p.data) { nom = p.data.prenom + ' ' + (p.data.nom || '').charAt(0) + '.'; } } } catch (e) {}
+    var texte = nom + ' · ' + (r.motif || 'Demande de retour') + ' · commande #' + r.commande_id;
+    toast('Demande de retour #' + r.id, texte, function () { filtreRet = 'tous'; aller('retours'); promesseRet.then(function () { ouvrirRet(r.id); }); });
+    bip(); notifierSysteme('Demande de retour #' + r.id, texte);
+    compterRetours();
+    if (vueActive === 'retours' && !$('ret-liste').hidden) { chargerRetours(); }
+  }
   async function verifierNouvelles() {
     if (!db || !vu.canal) { return; }
+    var rr = await db.from('retours').select('id,motif,commande_id,user_id').gt('id', vu.dernierRet).order('id', { ascending: true }).limit(5);
+    if (rr && !rr.error) { for (var j = 0; j < (rr.data || []).length; j++) { await nouveauRetour(rr.data[j]); } }
     var r = await db.from('commandes').select('id,total,user_id').gt('id', vu.dernierId).order('id', { ascending: true }).limit(5);
     if (r && !r.error) { for (var i = 0; i < (r.data || []).length; i++) { await nouvelleCommande(r.data[i]); } }
   }
@@ -1169,9 +1317,12 @@
     if (!db || vu.canal) { return; }
     var d = await db.from('commandes').select('id').order('id', { ascending: false }).limit(1);
     vu.dernierId = (d && d.data && d.data[0]) ? d.data[0].id : 0;
+    var dr = await db.from('retours').select('id').order('id', { ascending: false }).limit(1);
+    vu.dernierRet = (dr && dr.data && dr.data[0]) ? dr.data[0].id : 0;
     try {
       vu.canal = db.channel('menelki-commandes')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'commandes' }, function (p) { nouvelleCommande(p.new); })
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'retours' }, function (p) { nouveauRetour(p.new); })
         .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'commandes' }, function () { compterEnAttente(); rafraichirVue(); })
         .subscribe(function (statut) { vu.etat = (statut === 'SUBSCRIBED') ? 'en direct' : ''; majEtatAlertes(); });
     } catch (e) { vu.canal = {}; }
