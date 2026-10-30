@@ -8,12 +8,18 @@
 <title>Administration – MENELKI</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="admin.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Menelki Admin">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+<div id="hors-ligne" role="status" hidden>Hors connexion : les chiffres affichés ne sont peut-être pas à jour.</div>
 <section id="connexion" class="solo" hidden>
   <div class="solo-boite">
     <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
@@ -199,6 +205,17 @@
           <p class="aide" id="al-notif-aide"></p>
           <button class="btn petit clair" id="al-test" style="margin-top:14px">Tester l'alerte</button>
         </div>
+        <div class="bloc-det" id="bloc-app">
+          <h3>Application sur l'iPhone</h3>
+          <p class="aide" id="app-etat"></p>
+          <ol class="aide etapes-app" id="app-ios" hidden>
+            <li>Ouvre cette page dans <b>Safari</b>.</li>
+            <li>Touche le bouton <b>Partager</b> (le carré avec une flèche vers le haut).</li>
+            <li>Fais défiler et choisis <b>Sur l'écran d'accueil</b>.</li>
+            <li>Touche <b>Ajouter</b>. L'icône Menelki Admin apparaît sur ton écran d'accueil.</li>
+          </ol>
+          <button class="btn" id="app-installer" hidden>Installer l'application</button>
+        </div>
         <div class="bloc-det" id="bloc-email">
           <h3>E-mails d'alerte</h3>
           <p class="aide" id="em-etat"></p>
@@ -331,6 +348,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
+<script src="pwa.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

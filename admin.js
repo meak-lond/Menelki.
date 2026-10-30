@@ -28,7 +28,13 @@
     var s = await db.auth.getSession();
     if (!s.data.session) { montrer('connexion'); return; }
     var a = await db.rpc('est_admin');
-    if (a.error || a.data !== true) {
+    if (a.error) {
+      // Problème de réseau : on ne déconnecte surtout pas l'administrateur
+      $('ad-msg').textContent = "Impossible de joindre le serveur. Vérifie ta connexion Internet : la page réessaiera dès qu'elle reviendra.";
+      montrer('connexion');
+      return;
+    }
+    if (a.data !== true) {
       await db.auth.signOut();
       $('ad-msg').textContent = "Ce compte n'est pas administrateur.";
       montrer('connexion');
@@ -1112,7 +1118,7 @@
 
   async function compterRetours() {
     var r = await db.from('retours').select('id', { count: 'exact', head: true }).eq('statut', 'nouveau');
-    var n = (r && r.count) || 0, b = $('nav-nb-ret');
+    var n = (r && r.count) || 0, b = $('nav-nb-ret'); nbBadge.ret = n; majBadgeApp();
     if (b) { b.textContent = n; b.hidden = !n; }
   }
 
@@ -1385,7 +1391,7 @@
     });
     $('rg-score').textContent = pret + ' sur ' + lignes.length + ' réglages prêts';
     var b = $('rg-barre'); b.style.width = '0'; setTimeout(function () { b.style.width = Math.round(pret / lignes.length * 100) + '%'; }, 60);
-    initAlertes(); initEmail();
+    initAlertes(); initEmail(); initApp();
     db.auth.getSession().then(function (s) { var u = s && s.data && s.data.session; $('rg-email').textContent = u ? 'Connecté : ' + u.user.email : ''; });
   }
 
@@ -1622,11 +1628,45 @@
   // ----- Commandes en attente (cloche) -----
   async function compterEnAttente() {
     var r = await db.from('commandes').select('id', { count: 'exact', head: true }).eq('statut', 'en_attente');
-    var n = r.count || 0;
+    var n = r.count || 0; nbBadge.cmd = n; majBadgeApp();
     $('pastille').textContent = n > 99 ? '99+' : n; $('pastille').hidden = !n;
     $('nav-nb').textContent = n; $('nav-nb').hidden = !n;
     document.title = (n ? '(' + n + ') ' : '') + 'Administration – MENELKI';
   }
+
+  // ----- Application installée (écran d'accueil) -----
+  var nbBadge = { cmd: 0, ret: 0 };
+  function majBadgeApp() {
+    // Pastille rouge sur l'icône de l'application (commandes à traiter + retours nouveaux)
+    try {
+      var n = nbBadge.cmd + nbBadge.ret;
+      if (n && navigator.setAppBadge) { navigator.setAppBadge(n).catch(function () {}); }
+      else if (!n && navigator.clearAppBadge) { navigator.clearAppBadge().catch(function () {}); }
+    } catch (e) {}
+  }
+  function initApp() {
+    var P = window.MKPWA, e = $('app-etat'), ios = $('app-ios'), bt = $('app-installer');
+    ios.hidden = true; bt.hidden = true;
+    if (!P) { e.textContent = "L'installation n'est pas disponible sur cet appareil."; return; }
+    if (P.installee()) { e.textContent = "L'application est installée : tu l'utilises en plein écran, comme une vraie application."; return; }
+    e.textContent = "Installe Menelki Admin sur ton écran d'accueil : elle s'ouvre en plein écran, sans barre du navigateur, et l'icône affiche le nombre de commandes à traiter.";
+    if (P.installable()) { bt.hidden = false; }
+    else if (P.ios()) { ios.hidden = false; }
+    else { e.textContent += " Dans le menu de ton navigateur, cherche « Installer l'application » ou « Ajouter à l'écran d'accueil »."; }
+  }
+  $('app-installer').addEventListener('click', function () { window.MKPWA.installer().then(initApp); });
+  document.addEventListener('mk-installable', initApp);
+  document.addEventListener('mk-installee', initApp);
+
+  // ----- Connexion perdue / retrouvée -----
+  function majReseau() { $('hors-ligne').hidden = navigator.onLine !== false; }
+  window.addEventListener('offline', majReseau);
+  window.addEventListener('online', function () {
+    majReseau();
+    if (!$('connexion').hidden) { demarrer(); }
+    else if (db) { compterEnAttente(); compterRetours(); compterStockBas(); }
+  });
+  majReseau();
 
   demarrer();
 })();
