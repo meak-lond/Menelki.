@@ -199,6 +199,22 @@
           <p class="aide" id="al-notif-aide"></p>
           <button class="btn petit clair" id="al-test" style="margin-top:14px">Tester l'alerte</button>
         </div>
+        <div class="bloc-det" id="bloc-email">
+          <h3>E-mails d'alerte</h3>
+          <p class="aide" id="em-etat"></p>
+          <label for="em-dest">Adresse qui reçoit les alertes</label>
+          <input type="email" id="em-dest" inputmode="email" autocomplete="email" placeholder="ton-adresse@exemple.com">
+          <label for="em-exp">Nom d'expéditeur</label>
+          <input type="text" id="em-exp" maxlength="120" placeholder="MENELKI &lt;onboarding@resend.dev&gt;">
+          <p class="aide">Tant que ton propre domaine n'est pas validé dans Resend, garde « MENELKI &lt;onboarding@resend.dev&gt; » : Resend n'enverra alors qu'à l'adresse de ton compte Resend.</p>
+          <div class="cases">
+            <label class="case"><input type="checkbox" id="em-cmd"> E-mail à chaque nouvelle commande</label>
+            <label class="case"><input type="checkbox" id="em-ret"> E-mail à chaque demande de retour</label>
+          </div>
+          <button class="btn" id="em-save">Enregistrer</button>
+          <button class="btn clair" id="em-test">Envoyer un e-mail de test</button>
+          <p class="msg" id="em-msg"></p>
+        </div>
         <div class="bloc-det">
           <h3>Mon compte</h3>
           <p id="rg-email"></p>

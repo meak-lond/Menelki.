@@ -1385,9 +1385,85 @@
     });
     $('rg-score').textContent = pret + ' sur ' + lignes.length + ' réglages prêts';
     var b = $('rg-barre'); b.style.width = '0'; setTimeout(function () { b.style.width = Math.round(pret / lignes.length * 100) + '%'; }, 60);
-    initAlertes();
+    initAlertes(); initEmail();
     db.auth.getSession().then(function (s) { var u = s && s.data && s.data.session; $('rg-email').textContent = u ? 'Connecté : ' + u.user.email : ''; });
   }
+
+  // ----- E-mails d'alerte (Resend) -----
+  var emailPret = false;
+  function emMsg(t, ok) { var m = $('em-msg'); m.className = ok ? 'msg ok' : 'msg'; m.textContent = t; }
+  async function initEmail() {
+    emMsg('', true);
+    ['em-dest', 'em-exp', 'em-cmd', 'em-ret', 'em-save', 'em-test'].forEach(function (x) { $(x).disabled = true; });
+    var r = await db.from('notif_email').select('*').eq('id', 1).maybeSingle();
+    if (!r || r.error || !r.data) {
+      emailPret = false;
+      $('em-etat').textContent = "Les e-mails ne sont pas encore installés : lance le script menelki-admin-5.sql dans Supabase (SQL Editor), puis recharge cette page.";
+      return;
+    }
+    emailPret = true;
+    ['em-dest', 'em-exp', 'em-cmd', 'em-ret', 'em-save', 'em-test'].forEach(function (x) { $(x).disabled = false; });
+    $('em-dest').value = r.data.destinataire || '';
+    $('em-exp').value = r.data.expediteur || '';
+    $('em-cmd').checked = !!r.data.nouvelle_commande;
+    $('em-ret').checked = !!r.data.nouveau_retour;
+    majEtatEmail(r.data.destinataire);
+  }
+  function majEtatEmail(dest) {
+    $('em-etat').textContent = dest
+      ? 'Alertes actives vers ' + dest + '. Chaque nouvelle commande ou demande de retour t\'est envoyée par e-mail.'
+      : "Aucune adresse pour l'instant : renseigne-la ci-dessous pour recevoir les alertes par e-mail.";
+  }
+  async function enregistrerEmail() {
+    var dest = $('em-dest').value.trim(), exp = $('em-exp').value.trim();
+    if (dest && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(dest)) { emMsg("Cette adresse e-mail n'a pas l'air valide.", false); return false; }
+    if (exp.length < 5) { exp = 'MENELKI <onboarding@resend.dev>'; $('em-exp').value = exp; }
+    var lien = location.href.split('#')[0].split('?')[0];
+    var r = await db.from('notif_email').update({
+      destinataire: dest || null, expediteur: exp, lien_admin: /^https:\/\//i.test(lien) ? lien : null,
+      nouvelle_commande: $('em-cmd').checked, nouveau_retour: $('em-ret').checked, maj_le: new Date().toISOString()
+    }).eq('id', 1).select('id');
+    if (r.error || !r.data || !r.data.length) { emMsg("Enregistrement impossible" + (r.error ? ' : ' + r.error.message : '.'), false); return false; }
+    majEtatEmail(dest);
+    return true;
+  }
+  $('em-save').addEventListener('click', async function () {
+    if (!emailPret) { return; }
+    $('em-save').disabled = true;
+    var ok = await enregistrerEmail();
+    $('em-save').disabled = false;
+    if (ok) { emMsg('Réglages enregistrés.', true); }
+  });
+  function attendre(ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); }
+  $('em-test').addEventListener('click', async function () {
+    if (!emailPret) { return; }
+    $('em-test').disabled = true; emMsg('Envoi du test…', true);
+    try {
+      if (!(await enregistrerEmail())) { return; }
+      var r = await db.rpc('envoyer_email_test');
+      if (r.error) { emMsg("Le test n'a pas pu partir : " + r.error.message, false); return; }
+      var d = r.data || {};
+      if (!d.ok) {
+        emMsg(d.raison === 'cle' ? "La clé Resend n'est pas encore rangée dans Supabase (voir l'étape « Ranger la clé » du guide)." : "Renseigne d'abord l'adresse qui reçoit les alertes.", false);
+        return;
+      }
+      for (var i = 0; i < 4; i++) {
+        await attendre(1500);
+        var s = await db.rpc('resultat_email', { p_id: d.id });
+        var v = s && s.data;
+        if (v && v.pret) {
+          if (v.statut >= 200 && v.statut < 300) { emMsg('Test envoyé à ' + $('em-dest').value.trim() + '. Regarde ta boîte de réception (et les courriers indésirables).', true); }
+          else {
+            var txt = v.erreur || v.extrait || '';
+            try { var o = JSON.parse(v.extrait); if (o && o.message) { txt = o.message; } } catch (e) {}
+            emMsg('Resend a refusé l\'envoi (code ' + (v.statut || '?') + ') : ' + txt, false);
+          }
+          return;
+        }
+      }
+      emMsg("Envoi lancé. Si rien n'arrive d'ici une minute, vérifie la clé Resend.", true);
+    } finally { $('em-test').disabled = false; }
+  });
   $('rg-mdp-ok').addEventListener('click', async function () {
     var a = $('rg-mdp1').value, b = $('rg-mdp2').value, m = $('rg-mdp-msg');
     m.className = 'msg';
