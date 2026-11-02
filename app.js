@@ -1,4 +1,4 @@
-/* MENELKI – logique du site (comptes, catalogue, panier, assistant, animations)
+/* MENELKI, logique du site (comptes, catalogue, panier, assistant, animations)
    Les réglages (Supabase, contacts, livraison…) sont dans config.js */
 (function () {
   'use strict';
@@ -440,7 +440,7 @@
   function confirmation(id, total) {
     var z = $('panier-lignes');
     z.textContent = ''; $('panier-bas').textContent = ''; $('panier-msg').textContent = ''; $('panier-msg').className = '';
-    z.appendChild(el('p', 'total-l', 'Commande n°' + id + ' enregistrée ✓'));
+    z.appendChild(el('p', 'total-l', 'Commande n°' + id + ' enregistrée.'));
     z.appendChild(el('p', '', 'Pour la valider, envoie ' + fcfa(total) + ' par mobile money en indiquant le numéro de commande ' + id + ' en référence.'));
     var wave = cfg('NUMERO_WAVE'), om = cfg('NUMERO_ORANGE');
     if (wave) z.appendChild(el('p', '', 'Wave : ' + wave));
@@ -1122,29 +1122,17 @@
     if (z.classList.contains('open')) { setTimeout(function () { $('champ-recherche').focus(); }, 200); }
   });
 
-  // ===== Animations : en-tête, progression, parallaxe, apparitions =====
-  var entete = $('entete'), progres = $('progres');
+  // ===== En-tête et apparitions sobres =====
+  var entete = $('entete');
   var dernierY = 0, ticking = false;
-  var parallaxes = Array.prototype.slice.call(document.querySelectorAll('.px'));
 
   function auDefilement() {
     var y = window.pageYOffset || document.documentElement.scrollTop;
-    var haut = document.documentElement.scrollHeight - window.innerHeight;
-    progres.style.transform = 'scaleX(' + (haut > 0 ? Math.min(1, y / haut) : 0) + ')';
     entete.classList.toggle('fond', y > 30);
     var rechercheOuverte = $('zone-recherche').classList.contains('open');
     if (y > 260 && y > dernierY + 6 && !rechercheOuverte) { entete.classList.add('cache'); }
     else if (y < dernierY - 6 || y <= 260) { entete.classList.remove('cache'); }
     dernierY = y;
-    if (!reduit) {
-      var h = window.innerHeight;
-      parallaxes.forEach(function (im) {
-        var r = im.parentNode.getBoundingClientRect();
-        if (r.bottom < -50 || r.top > h + 50) { return; }
-        var p = ((r.top + r.height / 2) - h / 2) / h;
-        im.style.setProperty('--py', Math.max(-1, Math.min(1, p)) * -26 + 'px');
-      });
-    }
     ticking = false;
   }
   window.addEventListener('scroll', function () { if (!ticking) { ticking = true; window.requestAnimationFrame(auDefilement); } }, { passive: true });

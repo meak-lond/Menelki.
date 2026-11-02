@@ -496,7 +496,7 @@
   function deltaHtml(a, b) {
     var d = el('span', 'delta');
     var p = pct(a, b);
-    if (p === null) { d.textContent = a > 0 ? 'Nouveau' : '—'; return d; }
+    if (p === null) { d.textContent = a > 0 ? 'Nouveau' : '-'; return d; }
     var r = Math.round(p * 10) / 10;
     d.textContent = (r > 0 ? '▲ +' : r < 0 ? '▼ ' : '') + String(r).replace('.', ',') + ' %';
     if (r > 0) { d.className += ' hausse'; } else if (r < 0) { d.className += ' baisse'; }
@@ -966,7 +966,7 @@
     var tbody = el('tbody');
     (Array.isArray(c.articles) ? c.articles : []).forEach(function (l) {
       var r = el('tr');
-      r.appendChild(el('td', '', String(l.qte || 0))); r.appendChild(el('td', '', l.nom || 'Article')); r.appendChild(el('td', '', l.taille || '—')); r.appendChild(el('td', '', l.couleur || '—'));
+      r.appendChild(el('td', '', String(l.qte || 0))); r.appendChild(el('td', '', l.nom || 'Article')); r.appendChild(el('td', '', l.taille || '-')); r.appendChild(el('td', '', l.couleur || '-'));
       r.appendChild(el('td', 'd', ((parseInt(l.prix, 10) || 0) * (parseInt(l.qte, 10) || 0)).toLocaleString('fr-FR') + ' FCFA'));
       tbody.appendChild(r);
     });
@@ -979,7 +979,7 @@
     b.appendChild(tot);
     var pied = el('div', 'bon-pied');
     pied.appendChild(el('span', '', 'Merci pour ta commande. Wear your story.'));
-    pied.appendChild(el('span', '', 'Préparé ☐   Contrôlé ☐   Remis ☐'));
+    pied.appendChild(el('span', '', 'Préparé [ ]   Contrôlé [ ]   Remis [ ]'));
     b.appendChild(pied);
     return b;
   }
@@ -1631,7 +1631,7 @@
     var n = r.count || 0; nbBadge.cmd = n; majBadgeApp();
     $('pastille').textContent = n > 99 ? '99+' : n; $('pastille').hidden = !n;
     $('nav-nb').textContent = n; $('nav-nb').hidden = !n;
-    document.title = (n ? '(' + n + ') ' : '') + 'Administration – MENELKI';
+    document.title = (n ? '(' + n + ') ' : '') + 'Administration | MENELKI';
   }
 
   // ----- Application installée (écran d'accueil) -----

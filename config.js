@@ -1,5 +1,5 @@
 // ============================================================
-// MENELKI – réglages du site. C'est le seul fichier à modifier.
+// MENELKI, réglages du site. C'est le seul fichier à modifier.
 // Les lignes qui commencent par // sont des explications.
 // ============================================================
 

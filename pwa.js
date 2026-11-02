@@ -1,4 +1,4 @@
-// MENELKI – installation en application (page d'accueil de l'iPhone) et mode hors connexion
+// MENELKI, installation en application (page d'accueil de l'iPhone) et mode hors connexion
 (function () {
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
     window.addEventListener('load', function () {
