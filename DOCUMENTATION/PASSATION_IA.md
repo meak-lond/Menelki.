@@ -47,6 +47,16 @@ Ce document est le journal partagé du projet. Il sert à transmettre les décis
 
 Ajoute une entrée en haut de cette section à chaque intervention significative.
 
+### 2026-11-02 — Claude (améliorations du site selon la liste de qualité)
+- **Objectif :** appliquer la liste du propriétaire (pas de faux avis, pas de mention IA, page RGPD, pas d'animation de curseur, favicon, hero concret, pas de faux compteurs, pas de dégradés violets, pas de tirets longs, pas de photos IA, pas d'animations de défilement excessives, pas d'emojis comme icônes, nom de domaine perso, textes non génériques, pas de boutons pilules, page CGU).
+- **Branche / commit :** `claude/ameliorations-site` (commit `cfd1288`), PR vers `main`, validation humaine requise avant mise en ligne.
+- **Modifications :** `index.html`, `style.css`, `app.js` (retrait de l'intro, de la barre de progression, de la parallaxe, du bandeau défilant, de la rotation du hero, du flottement et de la pulsation ; apparitions en simple fondu ; hero et bandeau reformulés ; garanties limitées à des faits vérifiables) ; nouveau `cgu.html` ; `confidentialite.html` (renommée « Confidentialité et RGPD », bases légales, droits détaillés) ; pieds de page des pages publiques ; tirets longs retirés partout ; `admin.js` (symboles) ; `sw.js` (cache v2) ; favicon 32 px sur toutes les pages, `favicon.ico` ajouté.
+- **Supabase (si concerné) :** aucun changement.
+- **Vérifications effectuées :** `node --check` sur les scripts, chargement navigateur sans erreur JavaScript (mobile et bureau), captures d'écran, plus aucun tiret long dans le dépôt.
+- **Résultat :** prêt à valider.
+- **Points non résolus / risques :** (1) nom de domaine personnalisé : à acheter par le propriétaire, non fait ; (2) photos `look-*.jpg` : provenance à confirmer (aucune photo générée par IA) ; (3) textes de marque (manifeste, menu) à relire par le propriétaire ; (4) champs « À compléter » dans `config.js` (mentions légales, livraison, retours) ; (5) CGU et RGPD sont des modèles, à faire relire par un juriste.
+- **Prochaine étape proposée :** valider la PR, puis choisir et acheter un domaine.
+
 ### 2026-11-01 — Claude (lecture du document, état des lieux en lecture seule)
 - **Objectif :** lire ce document, examiner l'état réel du dépôt et de Supabase MENELKI, compléter l'inventaire laissé en attente, sans rien modifier en production.
 - **Branche / commit :** `coordination/passation-ia`, commit « docs: état des lieux Supabase et journal Claude ».
