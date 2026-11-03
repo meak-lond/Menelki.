@@ -47,6 +47,50 @@ Ce document est le journal partagé du projet. Il sert à transmettre les décis
 
 Ajoute une entrée en haut de cette section à chaque intervention significative.
 
+### 2026-11-02 — Claude (améliorations du site selon la liste de qualité)
+- **Objectif :** appliquer la liste du propriétaire (pas de faux avis, pas de mention IA, page RGPD, pas d'animation de curseur, favicon, hero concret, pas de faux compteurs, pas de dégradés violets, pas de tirets longs, pas de photos IA, pas d'animations de défilement excessives, pas d'emojis comme icônes, nom de domaine perso, textes non génériques, pas de boutons pilules, page CGU).
+- **Branche / commit :** `claude/ameliorations-site` (commit `cfd1288`), PR vers `main`, validation humaine requise avant mise en ligne.
+- **Modifications :** `index.html`, `style.css`, `app.js` (retrait de l'intro, de la barre de progression, de la parallaxe, du bandeau défilant, de la rotation du hero, du flottement et de la pulsation ; apparitions en simple fondu ; hero et bandeau reformulés ; garanties limitées à des faits vérifiables) ; nouveau `cgu.html` ; `confidentialite.html` (renommée « Confidentialité et RGPD », bases légales, droits détaillés) ; pieds de page des pages publiques ; tirets longs retirés partout ; `admin.js` (symboles) ; `sw.js` (cache v2) ; favicon 32 px sur toutes les pages, `favicon.ico` ajouté.
+- **Supabase (si concerné) :** aucun changement.
+- **Vérifications effectuées :** `node --check` sur les scripts, chargement navigateur sans erreur JavaScript (mobile et bureau), captures d'écran, plus aucun tiret long dans le dépôt.
+- **Résultat :** PR #3 fusionnée dans `main` par Claude le 2026-11-02 (merge `77b3b77`), sur demande du propriétaire (« Tu ne peux pas le faire directement »). Le propriétaire a ensuite ouvert le site. PR #4 (domaine menelki.com, `CNAME` + guide `DOCUMENTATION/DOMAINE_MENELKI_COM.md`) préparée, **non fusionnée** : à fusionner après achat du domaine, DNS et activation dans Settings > Pages.
+- **Points non résolus / risques :** (1) nom de domaine personnalisé : à acheter par le propriétaire, non fait ; (2) photos `look-*.jpg` : provenance à confirmer (aucune photo générée par IA) ; (3) textes de marque (manifeste, menu) à relire par le propriétaire ; (4) champs « À compléter » dans `config.js` (mentions légales, livraison, retours) ; (5) CGU et RGPD sont des modèles, à faire relire par un juriste.
+- **Prochaine étape proposée :** valider la PR, puis choisir et acheter un domaine.
+
+### 2026-11-01 — Claude (lecture du document, état des lieux en lecture seule)
+- **Objectif :** lire ce document, examiner l'état réel du dépôt et de Supabase MENELKI, compléter l'inventaire laissé en attente, sans rien modifier en production.
+- **Branche / commit :** `coordination/passation-ia`, commit « docs: état des lieux Supabase et journal Claude ».
+- **Modifications :** ce journal ; nouveau fichier `DOCUMENTATION/SCHEMA_SUPABASE.md` (instantané du schéma : tables, colonnes, contraintes, index, déclencheurs, fonctions, politiques RLS, privilèges). Aucun autre fichier du dépôt, aucune branche d'application modifiée.
+- **Supabase (si concerné) :** lecture seule uniquement, sur le projet `ddldwxdnrjbhppcztgiu` : liste des tables, migrations, extensions, Edge Functions, alertes de sécurité, définitions de fonctions, déclencheurs, politiques, index, colonnes, privilèges, Realtime, noms des secrets Vault (valeurs non lues), réponses `pg_net`. **Aucune migration appliquée, aucune donnée modifiée.**
+- **Vérifications effectuées :**
+  - 11 tables, RLS activé sur les 11 ; toutes les politiques attendues sont présentes.
+  - `TRUNCATE` retiré à `anon` et `authenticated` : confirmé (0 privilège). Aucun privilège accordé à `PUBLIC` sur les tables.
+  - L'inventaire des contraintes, index, déclencheurs, fonctions et valeurs par défaut est fait : voir `SCHEMA_SUPABASE.md`.
+  - 6 migrations enregistrées le 2026-10-31 (durcissement `search_path`, révocation `TRUNCATE`, restriction RPC de `rls_auto_enable`). Auteur non identifié depuis Supabase. Relecture statique des fonctions touchées : aucune référence non qualifiée trouvée.
+  - E-mails d'alerte : le secret Vault `resend_api_key` existe, un destinataire est configuré, et un envoi de test du 2026-10-30 a reçu le code 200 de Resend.
+  - Dépôt : `main` à `743a718` (fusion de la PR #1 par l'humain à 15:12) ; tous les fichiers de `main` sont identiques aux versions préparées par Claude, sauf `config.js` (valeurs réelles Supabase : la clé est de rôle `anon`, projet MENELKI).
+  - Branches distantes : `main`, `audit-menelki` (au commit `e5cab3e`, identique à l'ancien `main`), `coordination/passation-ia`.
+- **Résultat :** état sain, aucune anomalie bloquante.
+- **Points non résolus / risques :**
+  1. `passer_commande` et `verifier_code` ont changé de `search_path` (31/10) : relecture statique OK, mais **aucun test d'exécution réel** n'a été fait depuis ; à valider par une commande de test contrôlée ou sur une branche Supabase.
+  2. Les scripts SQL qui ont construit le schéma ne sont pas versionnés dans le dépôt ; les 6 migrations enregistrées ne couvrent qu'une partie. Ne pas générer de migration à partir de l'instantané seul.
+  3. Les privilèges de table sont plus larges que prévu par les scripts d'origine (par ex. mise à jour de `commandes` non limitée à `statut`) ; la protection repose sur la RLS. À examiner avant tout durcissement, avec validation.
+  4. `retours.statut` n'a pas de contrainte CHECK alors que l'interface n'utilise que `nouveau`, `en_cours`, `accepte`, `refuse`, `termine`.
+  5. Protection contre les mots de passe compromis désactivée (réglage Auth Supabase, éventuellement payant).
+  6. Non vérifié : réglages Auth (confirmation d'e-mail, URL de redirection), état de GitHub Pages, détails du bucket Storage.
+  7. Adresse réelle du site : `https://meak-lond.github.io/Menelki./` (avec le point final). La PR #1 a corrigé `og:url`, `og:image` et le bloc de données Google de `index.html` ; le chargement de `og-image.jpg` à cette adresse reste à confirmer par l'humain.
+- **Prochaine étape proposée (à valider) :** (a) versionner les scripts SQL existants dans le dépôt (par ex. `supabase/scripts/`) via une pull request ; (b) test contrôlé d'une commande de bout en bout ; (c) F2 (rapport récapitulatif, demande l'extension `pg_cron`) ou G2 (notifications push, demande une Edge Function) uniquement après accord explicite.
+
+### 2026-10-24 → 2026-11-01 — Claude (historique rétroactif, reconstitué le 2026-11-01)
+- **Objectif :** retracer ce qui a été produit avant la création de ce journal.
+- **Branche / commit :** livraisons sous forme de fichiers téléversés à la main par l'humain sur `main` (historique « Add files via upload »), puis PR #1 (`dfbe9ad`, fusionnée en `743a718`).
+- **Modifications (fichiers du dépôt) :** `admin.html`, `admin.css`, `admin.js` (tableau de bord, commandes avancées, alertes en direct, retours, produits avancés, réglages e-mail, application installable) ; `sw.js`, `pwa.js`, `manifest.webmanifest`, `admin.webmanifest`, `hors-ligne.html`, `icone-192.png` ; `index.html` (balises PWA, puis correction des 3 adresses).
+- **Supabase :** scripts SQL fournis puis exécutés par l'humain dans l'éditeur SQL : `menelki-admin` (droits administrateur), `-admin-2` (notes et historique de commandes), `-admin-3` (Realtime commandes), `-admin-4` (Realtime retours), `-admin-5` (e-mails d'alerte : table `notif_email`, déclencheurs `notifier_*`, fonctions de test). Copies des scripts dans les documents du projet Claude `claude/menelki-*.sql`. La clé Resend n'a jamais été écrite dans le dépôt : elle est dans Vault.
+- **Vérifications effectuées :** scripts testés sur un PostgreSQL local de substitution ; interface testée avec un navigateur automatisé et une base simulée ; **aucun de ces tests n'a tourné contre le vrai projet Supabase avant le 2026-11-01.**
+- **Résultat :** fonctionnalités livrées ; état réel confirmé par l'entrée ci-dessus.
+- **Points non résolus / risques :** voir l'entrée du 2026-11-01 ci-dessus.
+- **Prochaine étape proposée :** voir l'entrée du 2026-11-01 ci-dessus.
+
 ### 2026-11-01 — ChatGPT
 - Création de ce document de passation sur la branche `coordination/passation-ia`.
 - Objectif : centraliser les faits vérifiés, les décisions, les modifications et les prochaines étapes pour permettre une reprise fiable par Claude ou ChatGPT.
