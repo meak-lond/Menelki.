@@ -91,3 +91,25 @@ Ajoute une entrée en haut de cette section à chaque intervention significative
 - **Vérifications / limites :** lecture du code GitHub sur `main`; aucune mesure de performance en navigateur, aucun test réseau en conditions réelles et aucun changement de code ou de base de données.
 - **Résultat :** audit préliminaire documenté; aucune optimisation appliquée.
 - **Prochaine étape proposée :** poursuivre l'inventaire des appels Supabase dans le reste de `app.js`, puis mesurer les images et établir un ordre de correction. Ne rien modifier sans validation explicite.
+
+
+## Audit performance — app.js (2026-11-04)
+
+**Périmètre :** lecture seule de `app.js` sur `main`. Aucun changement de code ni de Supabase.
+
+**Constats vérifiés :**
+- La recherche écoute l'événement `input` et appelle `afficherProduits()`, qui déclenche immédiatement `lancerRecherche()` puis une requête Supabase. Le compteur `rechercheId` empêche l'affichage de réponses obsolètes, mais ne limite pas le nombre de requêtes déjà envoyées. Piste : debounce, après validation.
+- Deux blocs distincts appellent `db.auth.getSession()` et `db.auth.onAuthStateChange()`. Le second bloc met à jour l'utilisateur, vérifie le profil et recharge les favoris. Le premier met à jour l'affichage du formulaire de compte et gère `PASSWORD_RECOVERY`. Risque de traitements redondants à analyser avant toute fusion.
+- `PAGE = 24` et `.range()` implémentent déjà une pagination du catalogue.
+- `requeter()` et `chargerProduitsIds()` utilisent tous deux la sélection étendue `COLONNES`, qui comprend notamment description, matières, images, couleurs_images et stock. Piste : étudier des sélections distinctes catalogue/fiche, sans changer les besoins fonctionnels.
+- `chargerProduitsIds()` regroupe les identifiants dans une requête `.in('id', ids)` : pas de requête individuelle par produit dans ce chemin.
+- `chargerFavoris()` lit les favoris à l'authentification; `basculerFavori()` effectue un insert ou delete ciblé.
+- Les images des cartes produits ont `loading='lazy'` et `decoding='async'`. Les images de galerie et du panier n'ont pas de chargement différé explicite.
+
+**Priorités proposées (non exécutées) :**
+1. Mesurer le volume de requêtes de recherche, puis ajouter un debounce si confirmé utile.
+2. Cartographier les effets des deux abonnements auth avant de proposer leur regroupement.
+3. Déterminer les colonnes strictement nécessaires à chaque vue avant de réduire les sélections.
+4. Mesurer poids et dimensions des images avant toute conversion ou compression.
+
+**État :** audit app.js terminé en lecture seule. Aucune modification du code, des données, tables, fonctions ou politiques Supabase. Ces pistes nécessitent validation avant intervention.
