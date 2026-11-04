@@ -113,3 +113,31 @@ Ajoute une entrée en haut de cette section à chaque intervention significative
 4. Mesurer poids et dimensions des images avant toute conversion ou compression.
 
 **État :** audit app.js terminé en lecture seule. Aucune modification du code, des données, tables, fonctions ou politiques Supabase. Ces pistes nécessitent validation avant intervention.
+
+
+## Inventaire initial des images — 2026-11-04
+
+**Périmètre :** inventaire du dépôt GitHub `main` et repérage des références dans `index.html` / `config.js`. Lecture seule, aucun fichier modifié.
+
+**Images raster trouvées à la racine du dépôt (tailles GitHub) :**
+- `look-art.jpg` — 335 838 octets (~328 KiB)
+- `look-rue.jpg` — 297 776 octets (~291 KiB)
+- `look-tabouret.jpg` — 90 449 octets (~88 KiB)
+- `look-art-s.jpg` — 85 389 octets (~83 KiB)
+- `look-rue-s.jpg` — 79 490 octets (~78 KiB)
+- `look-tabouret-s.jpg` — 31 937 octets (~31 KiB)
+- `og-image.jpg` — 93 427 octets (~91 KiB)
+- `apple-touch-icon.png` — 6 245 octets
+- `icone-192.png` — 6 661 octets
+- `icone-512.png` — 21 954 octets
+- `favicon-32.png` — 867 octets
+- `favicon.ico` — 1 516 octets
+
+**Références constatées :** `index.html` référence les visuels look-art, look-rue et look-tabouret (dont les variantes -s), ainsi que les icônes et logos SVG. `app.js` utilise aussi `look-art.jpg` comme image principale selon l'audit précédent. La liste du dépôt ne contient pas de répertoire `images/` à la racine (réponse 404 à l'interrogation de ce chemin).
+
+**Limites de cet inventaire :**
+- Les dimensions en pixels et les formats réels décodés ne sont pas encore vérifiés.
+- Les images des produits semblent être fournies par les données du catalogue Supabase via `image_url`, `images` et `couleurs_images`; leurs URL et poids n'ont pas été inspectés.
+- Les tailles GitHub indiquent les octets stockés dans le dépôt, pas le poids réellement transféré après cache ou compression réseau.
+
+**Conclusion provisoire :** les deux grands visuels look-art.jpg et look-rue.jpg sont les plus lourds parmi les fichiers raster inventoriés. Il faut mesurer dimensions et usage exact avant de décider d'une conversion AVIF/WebP ou d'une compression. Aucun changement apporté au dépôt ou à Supabase.
