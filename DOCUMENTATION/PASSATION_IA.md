@@ -64,3 +64,30 @@ Ajoute une entrée en haut de cette section à chaque intervention significative
 - **Résultat :**
 - **Points non résolus / risques :**
 - **Prochaine étape proposée :**
+
+
+### 2026-11-04 — ChatGPT
+- **Objectif :** audit de performance frontend MENELKI, sans modification du code applicatif ni de Supabase.
+- **Branche examinée :** `main`.
+- **Fichiers examinés :** `index.html` et `app.js`.
+- **Constats vérifiés dans `index.html` :**
+  - Montserrat est chargé depuis Google Fonts.
+  - Supabase JS 2.45.4 est chargé depuis jsDelivr.
+  - `config.js`, `app.js` et `pwa.js` sont inclus en scripts classiques en bas du `body`, sans attribut `defer`/ `async`.
+  - L'image du hero `look-art.jpg` n'a pas d'attribut `loading`; plusieurs images secondaires ont `loading="lazy"`.
+  - Le poids réel des images et leur format n'ont pas encore été mesurés.
+- **Constats vérifiés dans `app.js` :**
+  - Le catalogue utilise déjà une pagination de 24 produits (`PAGE = 24`) et un bouton « Voir plus ».
+  - La recherche déclenche `lancerRecherche()` directement sur chaque événement `input`; aucun debounce n'est visible dans le gestionnaire de recherche examiné. Cela peut provoquer plusieurs requêtes pendant la saisie.
+  - La sélection `COLONNES` utilisée pour le catalogue comprend aussi des champs détaillés (`description`, `matieres`, `images`, `couleurs_images`, `stock`, `seuil_stock`). À évaluer pour distinguer les besoins de la liste et ceux de la fiche produit.
+  - Deux blocs distincts appellent `db.auth.getSession()` et enregistrent chacun un `onAuthStateChange()`. Le second déclenche notamment `chargerFavoris()` lors de l'initialisation et des changements d'authentification. Cette duplication est à analyser avant toute modification.
+  - Les favoris sont chargés par une requête `select('produit_id')`; le filtrage d'accès dépend des politiques RLS existantes.
+  - Le chargement des produits du panier/favoris utilise `select(COLONNES).in('id', ids)`, donc la même sélection large.
+- **Impact / priorité proposée :**
+  1. Mesurer les requêtes déclenchées pendant une recherche et envisager un debounce.
+  2. Évaluer une sélection de colonnes minimale pour les cartes catalogue, en gardant les détails nécessaires à la fiche produit.
+  3. Examiner la duplication des initialisations/listeners d'authentification et ses effets réels avant de la corriger.
+  4. Mesurer les poids et dimensions des images avant de convertir ou remplacer des fichiers.
+- **Vérifications / limites :** lecture du code GitHub sur `main`; aucune mesure de performance en navigateur, aucun test réseau en conditions réelles et aucun changement de code ou de base de données.
+- **Résultat :** audit préliminaire documenté; aucune optimisation appliquée.
+- **Prochaine étape proposée :** poursuivre l'inventaire des appels Supabase dans le reste de `app.js`, puis mesurer les images et établir un ordre de correction. Ne rien modifier sans validation explicite.
