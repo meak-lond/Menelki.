@@ -411,10 +411,10 @@
     var adr = el('input'); adr.id = 'cmd-adr'; adr.type = 'text'; adr.placeholder = 'Adresse de livraison';
     if (profilDonnees) { tel.value = profilDonnees.telephone || ''; adr.value = profilDonnees.adresse || ''; }
     zb.appendChild(tel); zb.appendChild(adr);
-    var o1 = el('label', 'option-paiement'); var r1 = el('input'); r1.type = 'radio'; r1.name = 'paiement'; r1.checked = true;
-    o1.appendChild(r1); o1.appendChild(document.createTextNode(' Mobile money (Wave / Orange Money)'));
-    var o2 = el('label', 'option-paiement grise'); var r2 = el('input'); r2.type = 'radio'; r2.name = 'paiement'; r2.disabled = true;
-    o2.appendChild(r2); o2.appendChild(document.createTextNode(' Paiement automatique CinetPay (bientôt)'));
+    var o1 = el('label', 'option-paiement'); var r1 = el('input'); r1.type = 'radio'; r1.name = 'paiement'; r1.value = 'en_ligne'; r1.checked = true;
+    o1.appendChild(r1); o1.appendChild(document.createTextNode(' Payer en ligne (Wave, Orange Money, MTN, Moov, carte)'));
+    var o2 = el('label', 'option-paiement'); var r2 = el('input'); r2.type = 'radio'; r2.name = 'paiement'; r2.value = 'manuel';
+    o2.appendChild(r2); o2.appendChild(document.createTextNode(' Mobile money manuel (je t\'envoie le montant)'));
     zb.appendChild(o1); zb.appendChild(o2);
     var bv = el('button', 'btn', 'Terminer ma commande');
     bv.addEventListener('click', commander);
@@ -434,7 +434,24 @@
     if (r.error) { m.textContent = 'La commande a échoué : ' + r.error.message; m.className = 'err'; return; }
     panier = {}; sauverPanier(); majBadge();
     codePromo = null;
+    var choix = document.querySelector('input[name="paiement"]:checked');
+    if (choix && choix.value === 'en_ligne') { payerEnLigne(r.data.id, r.data.total); return; }
     confirmation(r.data.id, r.data.total);
+  }
+
+  // Paiement en ligne FedaPay : la fonction Supabase « creer-paiement » renvoie le lien de paiement.
+  // Le montant n'est jamais envoyé par le navigateur : le serveur le relit dans la commande.
+  async function payerEnLigne(id, total) {
+    var z = $('panier-lignes');
+    z.textContent = ''; $('panier-bas').textContent = ''; $('panier-msg').className = '';
+    z.appendChild(el('p', 'total-l', 'Commande n°' + id + ' enregistrée.'));
+    z.appendChild(el('p', '', 'Redirection vers le paiement sécurisé…'));
+    var res = null;
+    try { res = await db.functions.invoke('creer-paiement', { body: { commande_id: id } }); } catch (e) { res = { error: e }; }
+    if (res && !res.error && res.data && res.data.url) { window.location.href = res.data.url; return; }
+    // Si le paiement en ligne échoue, la commande existe déjà : on propose le paiement manuel.
+    confirmation(id, total);
+    z.insertBefore(el('p', 'err', "Le paiement en ligne n'est pas disponible pour le moment. Tu peux payer par mobile money comme indiqué ci-dessous."), z.children[1]);
   }
 
   function confirmation(id, total) {
@@ -460,7 +477,17 @@
   $('panier-fond').addEventListener('click', function (e) { if (e.target === $('panier-fond')) fermerPanier(); });
 
   if (db) {
-    db.auth.getSession().then(function (r) { utilisateur = r.data.session ? r.data.session.user : null; majMenuCompte(); setTimeout(verifierProfil, 0); chargerFavoris(); });
+    db.auth.getSession().then(function (r) {
+      utilisateur = r.data.session ? r.data.session.user : null; majMenuCompte(); setTimeout(verifierProfil, 0); chargerFavoris();
+      // Retour depuis la page de paiement : on affiche « Mes commandes » (le statut passe à « Payée » après confirmation)
+      try {
+        var q = new URLSearchParams(window.location.search);
+        if (q.get('paiement') === 'retour' && utilisateur) {
+          history.replaceState(null, '', window.location.pathname + window.location.hash);
+          ouvrirEspace(function () { vueCommandes(true); });
+        }
+      } catch (e) {}
+    });
     db.auth.onAuthStateChange(function (evt, session) {
       utilisateur = session ? session.user : null; majMenuCompte(); setTimeout(verifierProfil, 0); chargerFavoris();
       if ($('panier-fond').classList.contains('open')) dessinerPanier();
@@ -629,14 +656,15 @@
     c.appendChild(ligne('logout', 'Se déconnecter', async function () { if (db) { await db.auth.signOut(); } fermerEspace(); }));
   }
 
-  async function vueCommandes() {
+  async function vueCommandes(apresPaiement) {
     var c = corps(); boutonRetour(c); c.appendChild(el('h3', '', 'Mes commandes'));
+    if (apresPaiement === true) { c.appendChild(el('p', '', "Merci ! Ton paiement est en cours de vérification. Le statut passe à « Payée » dans quelques instants (recharge la page si besoin).")); }
     var z = el('div', '', 'Chargement…'); c.appendChild(z);
     var r = await db.from('commandes').select('id,total,statut,cree_le,articles').order('cree_le', { ascending: false });
     z.textContent = '';
     if (r.error) { z.textContent = 'Impossible de charger tes commandes.'; return; }
     if (!r.data.length) { z.textContent = 'Aucune commande pour le moment.'; return; }
-    var STATUTS = { en_attente: 'En attente de paiement' };
+    var STATUTS = { en_attente: 'En attente de paiement', payee: 'Payée', expediee: 'Expédiée', livree: 'Livrée', annulee: 'Annulée' };
     r.data.forEach(function (o) {
       var row = el('div', 'ligne-panier');
       row.appendChild(el('span', 'nom-l', 'Commande n°' + o.id + ' · ' + new Date(o.cree_le).toLocaleDateString('fr-FR')));
