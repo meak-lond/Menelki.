@@ -47,6 +47,16 @@ Ce document est le journal partagé du projet. Il sert à transmettre les décis
 
 Ajoute une entrée en haut de cette section à chaque intervention significative.
 
+### 2026-11-16 — Claude (palette de couleurs)
+- **Objectif :** appliquer la palette fournie par le propriétaire : #050308, #2e0d18, #611927, #b87a3c, #f9e7d4.
+- **Branche / commit :** `claude/palette-bordeaux`, PR #5 fusionnée dans `main` par Claude à la demande du propriétaire (« Je ne vois aucune modification sur le site »).
+- **Modifications :** `style.css`, `legal.css` (variables et couleurs), `favicon.svg`, `menelki-logo-blanc.svg`, `menelki-symbole-blanc.svg`, `theme-color` des pages publiques, `manifest.webmanifest`.
+- **Supabase (si concerné) :** aucun changement.
+- **Vérifications effectuées :** chargement navigateur sans erreur JavaScript, captures d'écran mobile et bureau.
+- **Résultat :** en ligne après le déploiement GitHub Pages.
+- **Points non résolus / risques :** `admin.html`, `admin.css`, `admin.webmanifest`, `icone-192.png`, `icone-512.png`, `apple-touch-icon.png` et `og-image.jpg` gardent l'ancienne charte noir et argent.
+- **Prochaine étape proposée :** aligner l'administration et régénérer les icônes et l'image de partage si le propriétaire le souhaite.
+
 ### 2026-11-02 — Claude (améliorations du site selon la liste de qualité)
 - **Objectif :** appliquer la liste du propriétaire (pas de faux avis, pas de mention IA, page RGPD, pas d'animation de curseur, favicon, hero concret, pas de faux compteurs, pas de dégradés violets, pas de tirets longs, pas de photos IA, pas d'animations de défilement excessives, pas d'emojis comme icônes, nom de domaine perso, textes non génériques, pas de boutons pilules, page CGU).
 - **Branche / commit :** `claude/ameliorations-site` (commit `cfd1288`), PR vers `main`, validation humaine requise avant mise en ligne.
