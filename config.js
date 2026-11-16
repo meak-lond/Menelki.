@@ -16,7 +16,7 @@ var FOURNISSEURS = [];
 // --- 3. Ouverture des commandes ---
 // false = vitrine seulement (le site reste invisible pour Google).
 // true  = les clients peuvent commander.
-var COMMANDES_OUVERTES = false;
+var COMMANDES_OUVERTES = true;
 
 // --- 4. Contact (affiché dans le chat et les pages légales) ---
 var CONTACT_EMAIL = '';      // ex. 'contact@menelki.com'
