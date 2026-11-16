@@ -47,6 +47,15 @@ Ce document est le journal partagé du projet. Il sert à transmettre les décis
 
 Ajoute une entrée en haut de cette section à chaque intervention significative.
 
+### 2026-11-16 (2) — Claude (crème dominante)
+- **Objectif :** faire de #f9e7d4 (écrit « #9e7d4 » par le propriétaire, interprété comme #f9e7d4) la couleur dominante.
+- **Branche / commit :** `claude/creme-dominant`, PR fusionnée dans `main` par Claude à la demande du propriétaire.
+- **Modifications :** `style.css` (jeu de variables clair par défaut, zones sombres pour en-tête, hero, catégories, univers, newsletter, pied de page, menu), `legal.css` (pages légales en crème).
+- **Supabase (si concerné) :** aucun changement.
+- **Vérifications effectuées :** chargement sans erreur JavaScript, captures mobile et bureau de l'accueil et de la page CGU. Non revus à l'écran : fiche produit, panier, compte, assistant ouvert, feuilles d'options.
+- **Points non résolus / risques :** parcours connectés à vérifier visuellement ; administration inchangée.
+- **Retour arrière :** annuler le commit de fusion de cette PR sur `main`.
+
 ### 2026-11-16 — Claude (palette de couleurs)
 - **Objectif :** appliquer la palette fournie par le propriétaire : #050308, #2e0d18, #611927, #b87a3c, #f9e7d4.
 - **Branche / commit :** `claude/palette-bordeaux`, PR #5 fusionnée dans `main` par Claude à la demande du propriétaire (« Je ne vois aucune modification sur le site »).
