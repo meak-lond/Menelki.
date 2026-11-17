@@ -143,7 +143,7 @@
   }
   function totalPanier() { return lignes().reduce(function (t, l) { return t + l.p.prix * l.qte; }, 0); }
   function nbArticles() { return lignes().reduce(function (n, l) { return n + l.qte; }, 0); }
-  function majBadge() { var n = nbArticles(); $('nb-panier').textContent = n ? String(n) : ''; }
+  function majBadge() { var n = nbArticles(); $('nb-panier').textContent = n ? String(n) : ''; document.dispatchEvent(new CustomEvent('mk-panier', { detail: { n: n, total: totalPanier() } })); }
   function ajouter(id, taille, couleur) { var k = cle(id, taille, couleur); panier[k] = (panier[k] || 0) + 1; sauverPanier(); majBadge(); }
   function changer(k, d) {
     codePromo = null;
@@ -276,7 +276,11 @@
     if (defiler) { $('resultats').scrollIntoView({ behavior: 'smooth' }); }
   }
 
+  function majPastilles() {
+    document.querySelectorAll('.pastille').forEach(function (c) { c.classList.toggle('actif', (c.getAttribute('data-cat') || '') === (filtre || '')); });
+  }
   function afficherProduits(defiler) {
+    majPastilles();
     var actif = !!(filtre || terme);
     $('resultats').style.display = actif ? 'block' : 'none';
     $('bandes').style.display = actif ? 'none' : 'block';
@@ -469,7 +473,7 @@
   function ouvrirPanier() { $('panier-fond').classList.add('open'); $('panier-titre').textContent = 'Mon panier'; $('panier-msg').textContent = ''; dessinerPanier(); }
   function fermerPanier() { $('panier-fond').classList.remove('open'); }
 
-  document.querySelectorAll('.cat').forEach(function (a) {
+  document.querySelectorAll('.cat, .pastille').forEach(function (a) {
     a.addEventListener('click', function (e) { e.preventDefault(); filtre = a.getAttribute('data-cat'); afficherProduits(true); });
   });
   $('btn-panier').addEventListener('click', ouvrirPanier);

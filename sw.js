@@ -3,10 +3,10 @@
 // Principe : on va TOUJOURS chercher la version la plus récente sur Internet ;
 // la copie gardée en mémoire ne sert que si la connexion est coupée.
 // Les données (commandes, clients, produits) ne sont JAMAIS gardées ici.
-var VERSION = 'menelki-v2';
+var VERSION = 'menelki-v3';
 var BASE = [
   './', 'index.html', 'admin.html', 'admin.css', 'admin.js', 'style.css', 'app.js', 'config.js',
-  'hors-ligne.html', 'pwa.js', 'favicon.svg', 'icone-192.png', 'icone-512.png', 'apple-touch-icon.png',
+  'hors-ligne.html', 'pwa.js', 'nav-mobile.js', 'favicon.svg', 'icone-192.png', 'icone-512.png', 'apple-touch-icon.png',
   'menelki-symbole-blanc.svg', 'menelki-logo-blanc.svg', 'manifest.webmanifest', 'admin.webmanifest'
 ];
 var CDN_OK = /^https:\/\/cdn\.jsdelivr\.net\/npm\/@supabase\/supabase-js@/;

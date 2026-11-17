@@ -108,6 +108,14 @@
 </section>
 
 
+<nav class="pastilles" aria-label="Catégories">
+  <a class="pastille actif" href="#nouveautes" data-cat="">Tout</a>
+  <a class="pastille" href="#nouveautes" data-cat="vetements">Vêtements</a>
+  <a class="pastille" href="#nouveautes" data-cat="chaussures">Chaussures</a>
+  <a class="pastille" href="#nouveautes" data-cat="bijoux">Bijoux</a>
+  <a class="pastille" href="#nouveautes" data-cat="bracelets">Bracelets</a>
+</nav>
+
 <section id="categories" class="section">
   <div class="s-tete"><h2 class="revele"><small>Shop</small>Par catégorie</h2></div>
   <div class="cats">
@@ -329,6 +337,15 @@
   </div>
 </div>
 
+<button type="button" id="pill-panier" class="pill-panier" hidden><span id="pill-n">Voir le panier</span><span id="pill-total"></span></button>
+<nav id="onglets-bas" aria-label="Navigation principale">
+  <a href="#" data-go="haut" class="actif" id="ob-accueil"><svg class="ic"><use href="#i-home"/></svg><span>Accueil</span></a>
+  <a href="#nouveautes" data-go="nouveautes" id="ob-boutique"><svg class="ic"><use href="#i-colis"/></svg><span>Boutique</span></a>
+  <button type="button" id="ob-favoris"><svg class="ic"><use href="#i-heart"/></svg><span>Favoris</span></button>
+  <button type="button" id="ob-panier"><svg class="ic"><use href="#i-bag"/></svg><span>Panier</span><sup id="ob-nb"></sup></button>
+  <button type="button" id="ob-compte"><svg class="ic"><use href="#i-user"/></svg><span>Compte</span></button>
+</nav>
+
 <div id="cookies" role="dialog" aria-live="polite" aria-label="Cookies">
   <p><strong>Cookies</strong><br>MENELKI utilise des cookies et le stockage de ton navigateur pour garder ton panier et ta connexion. Avec ton accord, nous pourrons aussi mesurer l'audience pour améliorer le site. <a href="confidentialite.html">En savoir plus</a></p>
   <div class="cookies-btns"><button class="btn" id="cookies-ok">Accepter</button><button class="btn clair" id="cookies-non">Refuser</button></div>
@@ -343,6 +360,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
+<script src="nav-mobile.js"></script>
 <script src="app.js"></script>
 <script src="pwa.js"></script>
 </body>
