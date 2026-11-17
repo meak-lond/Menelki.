@@ -364,8 +364,9 @@
       row.appendChild(ph); row.appendChild(inf); zl.appendChild(row);
     });
     var valeur = totalPanier(), frais = fraisLivraison();
+    var carteRes = el('div', 'res-carte'); zb.appendChild(carteRes);
     function resume(a, b, gras) {
-      var d = el('div', gras ? 'res gras' : 'res'); d.appendChild(el('span', '', a)); d.appendChild(el('span', '', b)); zb.appendChild(d);
+      var d = el('div', gras ? 'res gras' : 'res'); d.appendChild(el('span', '', a)); d.appendChild(el('span', '', b)); carteRes.appendChild(d);
     }
     resume('Valeur de la commande', fcfa(valeur));
     resume('Frais de livraison estimés', frais === null ? 'À confirmer' : fcfa(frais));
@@ -414,7 +415,9 @@
     var tel = el('input'); tel.id = 'cmd-tel'; tel.type = 'tel'; tel.placeholder = 'Ton numéro de téléphone';
     var adr = el('input'); adr.id = 'cmd-adr'; adr.type = 'text'; adr.placeholder = 'Adresse de livraison';
     if (profilDonnees) { tel.value = profilDonnees.telephone || ''; adr.value = profilDonnees.adresse || ''; }
+    zb.appendChild(el('h4', 'pan-titre', 'Livraison'));
     zb.appendChild(tel); zb.appendChild(adr);
+    zb.appendChild(el('h4', 'pan-titre', 'Moyen de paiement'));
     var o1 = el('label', 'option-paiement'); var r1 = el('input'); r1.type = 'radio'; r1.name = 'paiement'; r1.value = 'en_ligne'; r1.checked = true;
     o1.appendChild(r1); o1.appendChild(document.createTextNode(' Payer en ligne (Wave, Orange Money, MTN, Moov, carte)'));
     var o2 = el('label', 'option-paiement'); var r2 = el('input'); r2.type = 'radio'; r2.name = 'paiement'; r2.value = 'manuel';
@@ -422,7 +425,9 @@
     zb.appendChild(o1); zb.appendChild(o2);
     var bv = el('button', 'btn', 'Terminer ma commande');
     bv.addEventListener('click', commander);
-    zb.appendChild(bv);
+    var barreV = el('div', 'barre-valider'); barreV.appendChild(bv); zb.appendChild(barreV);
+    [r1, r2].forEach(function (r) { r.addEventListener('change', function () { o1.classList.toggle('sel', r1.checked); o2.classList.toggle('sel', r2.checked); }); });
+    o1.classList.add('sel');
   }
 
   async function commander() {

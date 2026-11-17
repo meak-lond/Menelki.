@@ -558,3 +558,15 @@ h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing
   .cv-ba{bottom:0;height:56px}
   .cv-bb{bottom:0;height:240px;transform:translateY(100%)}
 }
+
+/* Étape 4 : panier et paiement */
+#panier-titre{font-family:'Space Grotesk',Inter,sans-serif;font-size:1.7rem;letter-spacing:-.01em;text-transform:none;font-weight:700;margin-bottom:16px}
+.pan-titre{font-family:'Space Grotesk',Inter,sans-serif;font-size:1.1rem;font-weight:600;margin:26px 0 12px;letter-spacing:0;text-transform:none}
+.res-carte{margin:18px 0 6px;padding:16px 18px;border-radius:22px;background:var(--noir2)}
+.res-carte .res.gras{margin:8px 0 0;padding-top:14px}
+.option-paiement{border:1.5px solid transparent;transition:border-color .2s}
+.option-paiement.sel{border-color:var(--cuivre)}
+.option-paiement input[type=radio]{accent-color:var(--cuivre)!important}
+#panier-bas .promo-ligne .btn{border-radius:24px}
+.barre-valider{position:sticky;bottom:calc(-30px - env(safe-area-inset-bottom,0px));margin:18px -22px 0;padding:12px 22px calc(30px + env(safe-area-inset-bottom,0px));background:var(--noir);border-top:1px solid var(--bord);z-index:2}
+.barre-valider .btn{margin:0!important;border-radius:26px;min-height:52px}
