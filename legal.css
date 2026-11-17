@@ -1,6 +1,6 @@
 /* Pages légales et 404, MENELKI */
 :root{--noir:#f9e7d4;--acier:#c9a47c;--argent:#8c5a1f;--blanc:#2e0d18;--inverse:#f9e7d4;--texte2:#4a2a35;--doux:#6b5547;--bord:#dcbf9f}
-header,footer{--noir:#050308;--acier:#2e0d18;--argent:#b87a3c;--blanc:#f9e7d4;--inverse:#050308;--doux:#a8978a;--bord:#3a1420}
+header,footer{--noir:#100906;--acier:#886c5f;--argent:#b87a3c;--blanc:#f9e7d4;--inverse:#100906;--doux:#bfa48b;--bord:rgba(136,108,95,.4)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--noir);color:var(--blanc);font-family:'Montserrat',system-ui,-apple-system,Arial,sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
 a{color:var(--blanc)}

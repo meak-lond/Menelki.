@@ -1,18 +1,12 @@
-/* ===== MENELKI, streetwear élégant ===== */
+/* ===== MENELKI, nouveau design ===== */
 :root{
-  /* Palette : noir #050308, prune #2e0d18, bordeaux #611927, cuivre #b87a3c, crème #f9e7d4 (couleur dominante) */
-  --noir:#f9e7d4; --noir2:#f3dcc3; --carte:#efd5b9; --acier:#c9a47c; --bordeaux:#611927;
-  --argent:#8c5a1f; --cuivre:#b87a3c; --blanc:#2e0d18; --inverse:#f9e7d4; --texte2:#4a2a35;
-  --noir-rgb:249,231,212; --blanc-rgb:46,13,24;
-  --btn-bg:#611927; --btn-tx:#f9e7d4;
-  --bord:#dcbf9f; --doux:#6b5547; --ok:#8fd19e; --err:#ff9a90;
+  /* Palette : fond #100906, surface #261d16, trait #886c5f, bordeaux #611927, cuivre #b87a3c, crème #f9e7d4 */
+  --noir:#100906; --noir2:#261d16; --carte:#261d16; --acier:#886c5f; --bordeaux:#611927;
+  --argent:#b87a3c; --cuivre:#b87a3c; --blanc:#f9e7d4; --inverse:#100906; --texte2:#d8c3ac;
+  --noir-rgb:16,9,6; --blanc-rgb:249,231,212;
+  --btn-bg:#b87a3c; --btn-tx:#100906;
+  --bord:rgba(136,108,95,.4); --doux:#bfa48b; --ok:#8fd19e; --err:#ff9a90;
   --ease:cubic-bezier(.2,.75,.2,1);
-}
-/* Zones sombres : en-tête, hero, photos, univers, newsletter, pied de page, menu */
-.annonce,header,.hero,.cat,.univers,.newsletter,footer,#menu{
-  --noir:#050308; --noir2:#0e0509; --carte:#170810; --acier:#2e0d18; --argent:#b87a3c;
-  --blanc:#f9e7d4; --inverse:#050308; --texte2:#dcc9b6; --noir-rgb:5,3,8; --blanc-rgb:249,231,212;
-  --btn-bg:#b87a3c; --btn-tx:#050308; --bord:#3a1420; --doux:#a8978a; color:var(--blanc);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scroll-padding-top:72px;-webkit-text-size-adjust:100%}
@@ -21,11 +15,11 @@ body.menu-ouvert{overflow:hidden}
 a{color:inherit;text-decoration:none}
 img{max-width:100%;display:block}
 button{font-family:inherit;color:inherit}
-::selection{background:var(--cuivre);color:#050308}
+::selection{background:var(--cuivre);color:#100906}
 :focus-visible{outline:2px solid var(--argent);outline-offset:3px}
 [hidden]{display:none!important}
 body::before{content:"";position:fixed;inset:0;z-index:150;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-.skip{position:absolute;left:-999px;top:0;background:#f9e7d4;color:#050308;padding:10px 14px;z-index:300}
+.skip{position:absolute;left:-999px;top:0;background:#f9e7d4;color:#100906;padding:10px 14px;z-index:300}
 .skip:focus{left:8px;top:8px}
 .ic{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
@@ -68,7 +62,7 @@ header.cache{transform:translateY(-100%)}
 .boutons{display:flex;gap:12px;flex-wrap:wrap}
 
 /* ===== Héros ===== */
-.hero{position:relative;min-height:calc(100svh - 96px);display:flex;align-items:flex-end;overflow:hidden;background:#050308;isolation:isolate}
+.hero{position:relative;min-height:calc(100svh - 96px);display:flex;align-items:flex-end;overflow:hidden;background:#100906;isolation:isolate}
 .hero-fonds{position:absolute;inset:0;z-index:-2}
 .hero-fonds figure{position:absolute;inset:0}
 .hero-fonds img{width:100%;height:100%;object-fit:cover;filter:grayscale(.3) contrast(1.05) brightness(.7)}
@@ -85,8 +79,8 @@ header.cache{transform:translateY(-100%)}
 .defiler{display:none}
 @media(min-width:900px){
   .hero{min-height:calc(100svh - 110px)}
-  .hero-fonds{left:38%;-webkit-mask-image:linear-gradient(90deg,transparent 0,#050308 38%);mask-image:linear-gradient(90deg,transparent 0,#050308 38%)}
-  .hero::after{background:linear-gradient(90deg,#050308 0,rgba(0,0,0,.35) 45%,rgba(0,0,0,0) 75%),linear-gradient(0deg,rgba(0,0,0,.65),rgba(0,0,0,0) 38%)}
+  .hero-fonds{left:38%;-webkit-mask-image:linear-gradient(90deg,transparent 0,#100906 38%);mask-image:linear-gradient(90deg,transparent 0,#100906 38%)}
+  .hero::after{background:linear-gradient(90deg,#100906 0,rgba(0,0,0,.35) 45%,rgba(0,0,0,0) 75%),linear-gradient(0deg,rgba(0,0,0,.65),rgba(0,0,0,0) 38%)}
   .hero{align-items:center}
   .hero-in{padding-bottom:0}
   .defiler{display:flex;position:absolute;right:48px;bottom:46px;flex-direction:column;align-items:center;gap:14px;font-size:.58rem;letter-spacing:.4em;text-transform:uppercase;color:var(--argent);writing-mode:vertical-rl}
@@ -141,7 +135,7 @@ h2 small{display:block;font-size:.6rem;letter-spacing:.5em;color:var(--argent);f
 .lien-filtre{text-decoration:underline;cursor:pointer;color:var(--blanc)}
 
 /* ===== Univers ===== */
-.univers{position:relative;overflow:hidden;border-top:1px solid var(--bord);background:radial-gradient(ellipse at 80% 20%,#1f0a13 0,#050308 62%)}
+.univers{position:relative;overflow:hidden;border-top:1px solid var(--bord);background:radial-gradient(ellipse at 80% 20%,#2e0d18 0,#100906 62%)}
 .univers-sym{position:absolute;right:-12%;top:8%;width:min(620px,95vw);opacity:.05;pointer-events:none}
 .mots{list-style:none;margin:clamp(30px,5vw,60px) 0}
 .mots li{font-size:clamp(1.5rem,7.4vw,6rem);font-weight:200;letter-spacing:.06em;text-transform:uppercase;line-height:1.15;padding:.14em 0;border-bottom:1px solid var(--bord);color:transparent;-webkit-text-stroke:1px rgba(var(--blanc-rgb),.5);transition:color .6s,-webkit-text-stroke-color .6s,padding-left .6s var(--ease)}
@@ -204,7 +198,7 @@ footer{background:var(--noir);border-top:1px solid var(--bord);padding:clamp(48p
 @media(min-width:900px){.pied-haut{grid-template-columns:1.2fr 2fr;align-items:start}.pied-cols{grid-template-columns:repeat(4,1fr)}}
 
 /* ===== Chat ===== */
-#chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:#050308;border:1px solid var(--cuivre);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:#100906;border:1px solid var(--cuivre);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;box-shadow:0 8px 30px rgba(0,0,0,.6)}
 #chat-btn .ic{width:24px;height:24px;stroke:#f9e7d4}
 #chat-box{display:none;position:fixed;right:12px;bottom:86px;width:min(350px,calc(100% - 24px));background:var(--noir2);border:1px solid var(--acier);z-index:10;box-shadow:0 20px 60px rgba(0,0,0,.7)}
 #chat-box.open{display:flex;flex-direction:column;animation:monte .4s var(--ease)}
@@ -379,7 +373,7 @@ footer{background:var(--noir);border-top:1px solid var(--bord);padding:clamp(48p
 .ligne:nth-child(2)>span{-webkit-text-stroke:1.5px #f0dcc7}
 @media(max-width:899px){
   .hero-fonds img{filter:grayscale(.3) contrast(1.08) brightness(.55)}
-  .hero::after{background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.3) 26%,rgba(0,0,0,.78) 55%,#050308 100%)}
+  .hero::after{background:linear-gradient(180deg,rgba(0,0,0,.7) 0%,rgba(0,0,0,.3) 26%,rgba(0,0,0,.78) 55%,#100906 100%)}
   .hero-sous{color:#f0dcc7;text-shadow:0 1px 10px rgba(0,0,0,.85)}
   .ligne>span{display:block}
 }
@@ -407,3 +401,88 @@ footer{background:var(--noir);border-top:1px solid var(--bord);padding:clamp(48p
   *,*::before,*::after{transition-duration:.01ms!important}
   .js .revele{opacity:1}
 }
+
+/* ===== Nouveau design : formes arrondies, textes Inter, titres Space Grotesk ===== */
+body{font-family:'Inter','Montserrat',system-ui,-apple-system,Arial,sans-serif;letter-spacing:0}
+h1,h2,h3,.logo,.hero-titre,.fiche-nom,.menu-titre{font-family:'Space Grotesk','Inter',system-ui,sans-serif}
+.logo{font-weight:700;letter-spacing:.22em}
+h2{font-weight:600;letter-spacing:-.01em;text-transform:none;font-size:clamp(1.5rem,5vw,2.4rem)}
+h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing:.16em}
+.s-note{font-weight:400}
+
+/* Boutons */
+.btn{border-radius:26px;min-height:48px;padding:14px 28px;font-size:.95rem;font-weight:600;letter-spacing:.01em;text-transform:none}
+.btn:hover{background:var(--blanc);border-color:var(--blanc);color:var(--inverse)}
+.btn.clair{background:transparent;color:var(--blanc);border-color:rgba(var(--blanc-rgb),.45)}
+.btn.petit{min-height:44px;padding:10px 18px;font-size:.85rem;letter-spacing:.01em;border-radius:22px}
+
+/* Hero : grande carte arrondie */
+.hero{margin:12px 16px 0;border-radius:28px;min-height:min(600px,calc(100svh - 150px));background:var(--bordeaux)}
+.hero::after{background:linear-gradient(180deg,rgba(16,9,6,.55) 0%,rgba(16,9,6,.2) 30%,rgba(16,9,6,.9) 100%)}
+.hero-fonds img{filter:contrast(1.05) brightness(.7)}
+.hero-in{padding:0 22px 30px}
+.hero-sur{letter-spacing:.16em;font-weight:600}
+.hero-titre{font-weight:700;text-transform:none;line-height:1.02;margin-bottom:18px}
+.ligne{font-size:clamp(3rem,15vw,7rem);letter-spacing:-.02em;margin-left:0}
+.ligne:nth-child(2)>span{color:inherit;-webkit-text-stroke:0}
+.ligne:nth-child(3)>span{font-weight:700;color:var(--cuivre)}
+.hero-sous{font-weight:400;letter-spacing:0;font-size:1rem;color:var(--texte2);margin-bottom:24px}
+@media(min-width:900px){
+  .hero{margin:16px clamp(16px,4vw,48px) 0;min-height:min(680px,calc(100svh - 150px))}
+  .hero-in{padding-left:clamp(28px,5vw,64px);padding-bottom:0}
+  .hero-fonds{-webkit-mask-image:none;mask-image:none;left:34%}
+  .hero::after{background:linear-gradient(90deg,#100906 0,rgba(16,9,6,.4) 45%,rgba(16,9,6,0) 75%)}
+}
+@media(max-width:899px){
+  .hero::after{background:linear-gradient(180deg,rgba(16,9,6,.6) 0%,rgba(16,9,6,.25) 28%,rgba(16,9,6,.82) 62%,#100906 100%)}
+  .hero-sous{color:var(--texte2)}
+}
+
+/* Catégories et produits : cartes arrondies */
+.cats{gap:12px}
+.cat{border-radius:22px}
+.cat::after{background:linear-gradient(180deg,transparent 45%,rgba(16,9,6,.88))}
+.cat-nom{font-family:'Inter',system-ui,sans-serif;letter-spacing:.02em;text-transform:none;font-size:1rem;font-weight:600}
+.catalogue{gap:20px 10px}
+.fiche .photo{border-radius:22px;aspect-ratio:1/1.1}
+.badge{border-radius:10px;padding:4px 10px;font-size:.7rem;letter-spacing:.02em;top:10px;left:10px}
+.coeur-f{width:44px;height:44px;top:6px;right:6px}
+.infos{padding:12px 4px 10px;font-size:.92rem;letter-spacing:0;text-transform:none;font-weight:500;line-height:1.3}
+.prix{letter-spacing:0;font-weight:600;color:var(--cuivre);margin-top:3px}
+.rail .fiche{flex:0 0 min(46vw,240px)}
+.fiche .btn.petit{width:100%}
+
+/* Panier, fiche produit, formulaires */
+.compte input,.compte select,.compte textarea,.esp-champ,.promo-ligne input,#panier-bas input,.recherche input{border-radius:18px;min-height:52px}
+.recherche input{border-radius:26px}
+.news-form input{border-radius:26px 0 0 26px}.news-form .btn{border-radius:0 26px 26px 0}
+.art{padding:14px;margin-bottom:12px;border:0;border-radius:22px;background:var(--noir2)}
+.art-photo{border-radius:16px;overflow:hidden}
+.art-qte{border:0;border-radius:22px;background:var(--bordeaux)}
+.art-qte button{width:44px;height:44px;border-radius:22px}
+.res.gras{border-top-color:var(--bord)}
+.consent,.m-compte{border-radius:20px}
+.feuille{border-radius:28px 28px 0 0;border-top:0}
+.gal-img{border-radius:22px}
+.sw{border-radius:14px}
+.sw.actif{border-color:var(--cuivre);box-shadow:0 0 0 1px var(--cuivre)}
+.tailles{display:flex;flex-wrap:wrap;gap:8px;background:none;border:0}
+.taille{min-width:56px;min-height:44px;padding:0 14px;border-radius:22px;background:var(--noir2);border:1px solid var(--acier);font-weight:600}
+.taille.actif{background:var(--cuivre);border-color:var(--cuivre);color:var(--inverse)}
+.fiche-nom{text-transform:none;letter-spacing:-.01em;font-size:1.6rem;font-weight:700}
+.fiche-prix{color:var(--cuivre);font-size:1.3rem}
+.option-paiement{min-height:56px;padding:0 16px;border-radius:20px;background:var(--noir2)}
+
+/* Menu, garanties, chat */
+.m-accueil{border-radius:26px}
+.m-bandeau{border-radius:22px}
+.m-bandeau.sombre{background:var(--bordeaux)}
+.m-ligne{border-radius:20px}
+.garanties-wrap{background:var(--noir2)}
+#chat-btn{background:var(--noir2)}
+#chat-box{border-radius:24px;overflow:hidden}
+.bulle{border-radius:18px}
+.bulle.moi{background:var(--cuivre);color:var(--inverse)}
+.chat-saisie button{background:var(--cuivre)}
+.chip{border-radius:22px;min-height:44px}
+#cookies{border-radius:22px}
