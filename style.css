@@ -577,3 +577,14 @@ html{height:100%;overflow:hidden;background:#100906;scroll-behavior:auto}
 body{height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:none;scroll-behavior:smooth;scroll-padding-top:72px}
 @media(prefers-reduced-motion:reduce){body{scroll-behavior:auto}}
 .cv{display:none!important}
+
+/* Barres intégrées : en-tête et barre du bas de la même couleur crème que la page, traits fins */
+header,#onglets-bas{--noir:#f9e7d4;--noir2:#f3dcc3;--carte:#efd5b9;--acier:#886c5f;--argent:#8c5a1f;--blanc:#261d16;--inverse:#f9e7d4;--texte2:#4a3a30;--noir-rgb:249,231,212;--blanc-rgb:38,29,22;--btn-bg:#611927;--btn-tx:#f9e7d4;--bord:#e3cbad;--doux:#6b5547}
+header{border-bottom:1px solid transparent}
+header.fond{border-color:var(--bord)}
+#onglets-bas{border-top:1px solid var(--bord)}
+#onglets-bas .actif{color:var(--bordeaux)}
+.pill-panier{background:var(--bordeaux)!important;color:#f9e7d4!important}
+html{background:#f9e7d4}
+/* Boutons clairs dans les zones sombres (au lieu du cuivre partout) */
+.annonce,.hero,.cat,.univers,.newsletter,footer,#menu{--btn-bg:#f9e7d4;--btn-tx:#261d16}
