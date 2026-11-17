@@ -546,3 +546,12 @@ h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing
   body.barres-cachees #chat-btn{bottom:calc(22px + env(safe-area-inset-bottom,0px))}
   body.barres-cachees.a-pill #chat-btn{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 }
+
+/* iPhone (Safari) : les photos ne doivent jamais se voir sous l'heure ni sous la barre de Safari.
+   Deux bandes sombres fixes sont posées juste au-dessus et juste en dessous de la zone visible. */
+@media(max-width:899px){
+  html::before,html::after{content:"";position:fixed;left:0;right:0;height:240px;background:#100906;pointer-events:none;z-index:14}
+  html::before{top:0;transform:translateY(-100%)}
+  html::after{bottom:0;transform:translateY(100%)}
+}
+.prix .ancien,.fiche-prix .ancien{display:inline-block;white-space:nowrap}
