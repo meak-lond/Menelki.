@@ -749,6 +749,11 @@
     w.appendChild(t); w.appendChild(el('div', 'acc-c', texte));
     return w;
   }
+  function ligneInfo(ic, titre, texte) {
+    var l = el('div', 'fiche-info-l'); l.appendChild(icone(ic));
+    var d = el('div'); d.appendChild(el('strong', '', titre)); d.appendChild(el('span', '', texte));
+    l.appendChild(d); return l;
+  }
   function fermerFiche() { $('fiche-fond').classList.remove('open'); }
 
   function ouvrirFiche(p) {
@@ -822,12 +827,14 @@
     fb.setAttribute('data-fav-id', p.id);
     fb.addEventListener('click', function () { basculerFavori(p); });
     c.appendChild(fb);
-    c.appendChild(ajout); c.appendChild(etat);
 
     var liv = cfg('INFO_LIVRAISON');
+    var boite = el('div', 'fiche-info');
+    boite.appendChild(ligneInfo('colis', 'Livraison', liv || 'Les informations de livraison sont dans nos conditions de vente.'));
+    boite.appendChild(ligneInfo('lock', 'Paiement sécurisé', 'Par mobile money : Wave ou Orange Money.'));
+    c.appendChild(boite);
     c.appendChild(accordeon('Description et coupe', p.description || 'Description à venir.'));
     c.appendChild(accordeon('Matériaux et entretien', p.matieres || 'Informations à venir.'));
-    c.appendChild(accordeon('Livraison et paiement', (liv ? liv + ' ' : 'Les informations de livraison sont dans nos conditions de vente. ') + 'Paiement par mobile money (Wave / Orange Money).'));
 
     var autres = produits.filter(function (x) { return x.id !== p.id && x.categorie !== p.categorie; }).slice(0, 4);
     if (autres.length) {
@@ -836,6 +843,10 @@
       autres.forEach(function (x) { rail.appendChild(carte(x)); });
       c.appendChild(rail);
     }
+    var barre = el('div', 'fiche-barre'), bp = el('div', 'fb-prix');
+    bp.appendChild(el('span', 'fb-lbl', 'Total')); bp.appendChild(el('span', 'fb-val', fcfa(p.prix)));
+    barre.appendChild(etat); barre.appendChild(bp); barre.appendChild(ajout);
+    c.appendChild(barre);
     $('fiche-fond').classList.add('open');
     $('fiche-fond').querySelector('.compte').scrollTop = 0;
   }
