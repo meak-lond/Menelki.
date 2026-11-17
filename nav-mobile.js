@@ -34,12 +34,12 @@
   function suivre() {
     var haut = $('haut');
     var seuil = haut ? haut.offsetHeight * 0.6 : 300;
-    var y = window.pageYOffset || document.documentElement.scrollTop;
+    var y = document.body.scrollTop;
     barres(y);
     var bas = y > seuil;
     if ($('ob-accueil')) { $('ob-accueil').classList.toggle('actif', !bas); }
     if ($('ob-boutique')) { $('ob-boutique').classList.toggle('actif', bas); }
   }
-  window.addEventListener('scroll', suivre, { passive: true });
+  document.body.addEventListener('scroll', suivre, { passive: true });
   suivre();
 })();

@@ -570,3 +570,10 @@ h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing
 #panier-bas .promo-ligne .btn{border-radius:24px}
 .barre-valider{position:sticky;bottom:calc(-30px - env(safe-area-inset-bottom,0px));margin:18px -22px 0;padding:12px 22px calc(30px + env(safe-area-inset-bottom,0px));background:var(--noir);border-top:1px solid var(--bord);z-index:2}
 .barre-valider .btn{margin:0!important;border-radius:26px;min-height:52px}
+
+/* iPhone Safari : la page défile dans <body>, pas dans la fenêtre.
+   Ainsi rien ne passe sous l'heure ni sous la barre de Safari : on voit le fond sombre du html. */
+html{height:100%;overflow:hidden;background:#100906;scroll-behavior:auto}
+body{height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-y:none;scroll-behavior:smooth;scroll-padding-top:72px}
+@media(prefers-reduced-motion:reduce){body{scroll-behavior:auto}}
+.cv{display:none!important}
