@@ -25,10 +25,18 @@
     document.body.classList.toggle('a-pill', !!n);
   });
 
+  var dernierY = 0;
+  function barres(y) {
+    if (y > 260 && y > dernierY + 6) { document.body.classList.add('barres-cachees'); }
+    else if (y < dernierY - 6 || y <= 260) { document.body.classList.remove('barres-cachees'); }
+    dernierY = y;
+  }
   function suivre() {
     var haut = $('haut');
     var seuil = haut ? haut.offsetHeight * 0.6 : 300;
-    var bas = (window.pageYOffset || document.documentElement.scrollTop) > seuil;
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+    barres(y);
+    var bas = y > seuil;
     if ($('ob-accueil')) { $('ob-accueil').classList.toggle('actif', !bas); }
     if ($('ob-boutique')) { $('ob-boutique').classList.toggle('actif', bas); }
   }
