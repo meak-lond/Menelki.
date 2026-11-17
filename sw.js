@@ -3,7 +3,7 @@
 // Principe : on va TOUJOURS chercher la version la plus récente sur Internet ;
 // la copie gardée en mémoire ne sert que si la connexion est coupée.
 // Les données (commandes, clients, produits) ne sont JAMAIS gardées ici.
-var VERSION = 'menelki-v4';
+var VERSION = 'menelki-v5';
 var BASE = [
   './', 'index.html', 'admin.html', 'admin.css', 'admin.js', 'style.css', 'app.js', 'config.js',
   'hors-ligne.html', 'pwa.js', 'nav-mobile.js', 'favicon.svg', 'icone-192.png', 'icone-512.png', 'apple-touch-icon.png',
@@ -50,7 +50,7 @@ self.addEventListener('fetch', function (e) {
 
   // Pages et fichiers du site : Internet d'abord, copie en secours
   e.respondWith(
-    fetch(req).then(function (rep) {
+    fetch(req, { cache: 'no-cache' }).then(function (rep) {
       if (rep && rep.ok && rep.type === 'basic') {
         var copie = rep.clone();
         caches.open(VERSION).then(function (c) { c.put(req, copie); });

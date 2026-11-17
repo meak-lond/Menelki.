@@ -548,3 +548,13 @@ h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing
 }
 
 .prix .ancien,.fiche-prix .ancien{display:inline-block;white-space:nowrap}
+
+/* Caches sombres fixes : rien ne doit se voir sous l'heure ni sous la barre de Safari (iPhone) */
+.cv{display:none}
+@media(max-width:899px){
+  .cv{display:block;position:fixed;left:0;right:0;background:#100906;pointer-events:none;z-index:14}
+  .cv-ha{top:0;height:56px}
+  .cv-hb{top:0;height:240px;transform:translateY(-100%)}
+  .cv-ba{bottom:0;height:56px}
+  .cv-bb{bottom:0;height:240px;transform:translateY(100%)}
+}
