@@ -1,7 +1,7 @@
 /* ===== MENELKI, nouveau design : page claire (crème) + zones sombres ===== */
 :root{
   /* Palette : crème #f9e7d4 (fond), brun #100906 / #261d16 / #886c5f, bordeaux #611927, cuivre #b87a3c */
-  --noir:#f9e7d4; --noir2:#f3dcc3; --carte:#efd5b9; --acier:#886c5f; --bordeaux:#611927;
+  --noir:#f9e7d4; --noir2:#f3dcc3; --carte:#efd5b9; --acier:#735a4d; --bordeaux:#611927;
   --argent:#8c5a1f; --cuivre:#b87a3c; --blanc:#261d16; --inverse:#f9e7d4; --texte2:#4a3a30;
   --noir-rgb:249,231,212; --blanc-rgb:38,29,22;
   --btn-bg:#611927; --btn-tx:#f9e7d4;
@@ -431,7 +431,7 @@ h2 small{font-family:'Inter',system-ui,sans-serif;font-weight:600;letter-spacing
 .hero-titre{font-weight:700;text-transform:none;line-height:1.02;margin-bottom:18px}
 .ligne{font-size:clamp(3rem,15vw,7rem);letter-spacing:-.02em;margin-left:0}
 .ligne:nth-child(2)>span{color:inherit;-webkit-text-stroke:0}
-.ligne:nth-child(3)>span{font-weight:700;color:var(--cuivre)}
+.ligne:nth-child(3)>span{font-weight:700;color:var(--argent)}
 .hero-sous{font-weight:400;letter-spacing:0;font-size:1rem;color:var(--texte2);margin-bottom:24px}
 @media(min-width:900px){
   .hero{margin:16px clamp(16px,4vw,48px) 0;min-height:min(680px,calc(100svh - 150px))}
@@ -579,7 +579,7 @@ body{height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:to
 .cv{display:none!important}
 
 /* Barres intégrées : en-tête et barre du bas de la même couleur crème que la page, traits fins */
-header,#onglets-bas{--noir:#f9e7d4;--noir2:#f3dcc3;--carte:#efd5b9;--acier:#886c5f;--argent:#8c5a1f;--blanc:#261d16;--inverse:#f9e7d4;--texte2:#4a3a30;--noir-rgb:249,231,212;--blanc-rgb:38,29,22;--btn-bg:#611927;--btn-tx:#f9e7d4;--bord:#e3cbad;--doux:#6b5547}
+header,#onglets-bas{--noir:#f9e7d4;--noir2:#f3dcc3;--carte:#efd5b9;--acier:#735a4d;--argent:#8c5a1f;--blanc:#261d16;--inverse:#f9e7d4;--texte2:#4a3a30;--noir-rgb:249,231,212;--blanc-rgb:38,29,22;--btn-bg:#611927;--btn-tx:#f9e7d4;--bord:#e3cbad;--doux:#6b5547}
 header{border-bottom:1px solid transparent}
 header.fond{border-color:var(--bord)}
 #onglets-bas{border-top:1px solid var(--bord)}
@@ -588,3 +588,6 @@ header.fond{border-color:var(--bord)}
 html{background:#f9e7d4}
 /* Boutons clairs dans les zones sombres (au lieu du cuivre partout) */
 .annonce,.hero,.cat,.univers,.newsletter,footer,#menu{--btn-bg:#f9e7d4;--btn-tx:#261d16}
+
+/* Accessibilité : pastille du panier lisible sur la barre crème */
+#ob-nb:not(:empty){background:var(--bordeaux);color:#f9e7d4}
