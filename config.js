@@ -36,7 +36,7 @@ var INFO_TAILLES = 'Vêtements (tour de poitrine) : S 88-96 cm · M 96-104 cm ·
 var AGE_MINIMUM = 16;
 
 // --- 8. Réseaux sociaux (l'icône n'apparaît que si le lien est rempli) ---
-var LIEN_INSTAGRAM = '';     // ex. 'https://instagram.com/menelki'
+var LIEN_INSTAGRAM = 'https://www.instagram.com/menelki_shop';     // ex. 'https://instagram.com/menelki'
 var LIEN_TIKTOK = '';
 var LIEN_YOUTUBE = '';
 var LIEN_FACEBOOK = '';
