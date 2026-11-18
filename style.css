@@ -591,3 +591,5 @@ html{background:#f9e7d4}
 
 /* Accessibilité : pastille du panier lisible sur la barre crème */
 #ob-nb:not(:empty){background:var(--bordeaux);color:#f9e7d4}
+.zones-liv{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.zones-liv .option-paiement{margin:0}

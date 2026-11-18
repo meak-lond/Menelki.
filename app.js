@@ -151,7 +151,9 @@
     if (q <= 0) { delete panier[k]; } else { panier[k] = q; }
     sauverPanier(); majBadge(); dessinerPanier();
   }
-  function fraisLivraison() { return (typeof FRAIS_LIVRAISON === 'number') ? FRAIS_LIVRAISON : null; }
+  var ZONES = { yamoussoukro: { nom: 'Yamoussoukro', frais: 1000 }, abidjan: { nom: 'Abidjan', frais: 1500 } };
+  var zoneLiv = 'yamoussoukro';
+  function fraisLivraison() { return ZONES[zoneLiv].frais; }
 
   function choisirOptions(p, apres) {
     var t = p.tailles || [], c = p.couleurs || [];
@@ -364,15 +366,17 @@
       row.appendChild(ph); row.appendChild(inf); zl.appendChild(row);
     });
     var valeur = totalPanier(), frais = fraisLivraison();
+    var peutCommander = commandesOuvertes() && !!utilisateur && profilOk !== false;
     var carteRes = el('div', 'res-carte'); zb.appendChild(carteRes);
     function resume(a, b, gras) {
-      var d = el('div', gras ? 'res gras' : 'res'); d.appendChild(el('span', '', a)); d.appendChild(el('span', '', b)); carteRes.appendChild(d);
+      var d = el('div', gras ? 'res gras' : 'res'); d.appendChild(el('span', '', a)); var v = el('span', '', b); d.appendChild(v); carteRes.appendChild(d); return v;
     }
     resume('Valeur de la commande', fcfa(valeur));
-    resume('Frais de livraison estimés', frais === null ? 'À confirmer' : fcfa(frais));
+    var vFrais = resume('Livraison', peutCommander ? fcfa(frais) : 'Choisie à la commande');
     if (codePromo) { resume('Code ' + codePromo.code, '− ' + fcfa(codePromo.remise)); }
     var remiseAppliquee = codePromo ? codePromo.remise : 0;
-    resume('Total de la commande :', fcfa(valeur - remiseAppliquee + (frais || 0)), true);
+    var vTotal = resume('Total de la commande :', fcfa(valeur - remiseAppliquee + (peutCommander ? frais : 0)), true);
+    function majTotaux() { vFrais.textContent = fcfa(fraisLivraison()); vTotal.textContent = fcfa(valeur - remiseAppliquee + fraisLivraison()); }
     var promoZone = el('div', 'promo-zone');
     var pligne = el('div', 'promo-ligne');
     var pin = el('input'); pin.type = 'text'; pin.id = 'promo-code'; pin.placeholder = 'Code promo';
@@ -416,6 +420,18 @@
     var adr = el('input'); adr.id = 'cmd-adr'; adr.type = 'text'; adr.placeholder = 'Adresse de livraison';
     if (profilDonnees) { tel.value = profilDonnees.telephone || ''; adr.value = profilDonnees.adresse || ''; }
     zb.appendChild(el('h4', 'pan-titre', 'Livraison'));
+    var zonesDiv = el('div', 'zones-liv');
+    Object.keys(ZONES).forEach(function (k) {
+      var lb = el('label', 'option-paiement' + (zoneLiv === k ? ' sel' : ''));
+      var rd = el('input'); rd.type = 'radio'; rd.name = 'zone'; rd.value = k; rd.checked = zoneLiv === k;
+      rd.addEventListener('change', function () {
+        zoneLiv = k; majTotaux();
+        Array.prototype.forEach.call(zonesDiv.children, function (c) { c.classList.toggle('sel', c.firstChild.checked); });
+      });
+      lb.appendChild(rd); lb.appendChild(document.createTextNode(' ' + ZONES[k].nom + ' · ' + fcfa(ZONES[k].frais) + ' · 3 jours max'));
+      zonesDiv.appendChild(lb);
+    });
+    zb.appendChild(zonesDiv);
     zb.appendChild(tel); zb.appendChild(adr);
     zb.appendChild(el('h4', 'pan-titre', 'Moyen de paiement'));
     var o1 = el('label', 'option-paiement'); var r1 = el('input'); r1.type = 'radio'; r1.name = 'paiement'; r1.value = 'en_ligne'; r1.checked = true;
@@ -439,7 +455,7 @@
     if (!L.length || !db) return;
     // Le serveur recalcule les prix : le navigateur n'envoie que les articles et les choix
     var articles = L.map(function (l) { return { id: l.p.id, qte: l.qte, taille: l.taille, couleur: l.couleur }; });
-    var r = await db.rpc('passer_commande', { p_articles: articles, p_telephone: tel, p_adresse: adr, p_code: codePromo ? codePromo.code : null });
+    var r = await db.rpc('passer_commande', { p_articles: articles, p_telephone: tel, p_adresse: adr, p_code: codePromo ? codePromo.code : null, p_ville: zoneLiv });
     if (r.error) { m.textContent = 'La commande a échoué : ' + r.error.message; m.className = 'err'; return; }
     panier = {}; sauverPanier(); majBadge();
     codePromo = null;

@@ -849,6 +849,7 @@
     function ligne(txt, val, fort) { var d = el('div', 'tot-l' + (fort ? ' fort' : '')); d.appendChild(el('span', '', txt)); d.appendChild(el('span', '', val)); ar.appendChild(d); }
     ligne('Sous-total', c.sous_total.toLocaleString('fr-FR') + ' FCFA');
     if (c.remise > 0) { ligne('Remise' + (c.code_promo ? ' (' + c.code_promo + ')' : ''), '− ' + c.remise.toLocaleString('fr-FR') + ' FCFA'); }
+    if (c.frais_livraison > 0) { ligne('Livraison' + (c.ville_livraison ? ' (' + c.ville_livraison + ')' : ''), c.frais_livraison.toLocaleString('fr-FR') + ' FCFA'); }
     ligne('Total à payer', c.total.toLocaleString('fr-FR') + ' FCFA', true);
     z.appendChild(ar);
 
@@ -975,6 +976,7 @@
     function l2(a, v, f) { var d = el('div', f ? 'f' : ''); d.appendChild(el('span', '', a)); d.appendChild(el('span', '', v)); tot.appendChild(d); }
     l2('Sous-total', c.sous_total.toLocaleString('fr-FR') + ' FCFA');
     if (c.remise > 0) { l2('Remise', '− ' + c.remise.toLocaleString('fr-FR') + ' FCFA'); }
+    if (c.frais_livraison > 0) { l2('Livraison', c.frais_livraison.toLocaleString('fr-FR') + ' FCFA'); }
     l2('Total', c.total.toLocaleString('fr-FR') + ' FCFA', true);
     b.appendChild(tot);
     var pied = el('div', 'bon-pied');
