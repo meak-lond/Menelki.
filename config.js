@@ -30,7 +30,7 @@ var NUMERO_ORANGE = '';
 // var FRAIS_LIVRAISON = 2000;   // décommente pour afficher des frais fixes (en FCFA)
 var INFO_LIVRAISON = 'Livraison à Yamoussoukro : 1 000 FCFA. Livraison à Abidjan : 1 500 FCFA. Délai : 3 jours maximum après confirmation du paiement. Les frais de livraison sont confirmés avec toi avant l\'expédition.';     // ex. 'Abidjan : 1 à 2 jours, 2 000 FCFA. International : 7 à 14 jours.'
 var INFO_RETOURS = 'Tu peux demander un retour dans un délai de 7 jours après la réception, pour un article non porté, non lavé, avec ses étiquettes et dans son état d\'origine. Contacte-nous d\'abord par WhatsApp ou par e-mail avec ton numéro de commande. Si l\'article est défectueux ou ne correspond pas à ta commande, MENELKI prend en charge les frais de retour. Dans les autres cas, les frais de retour sont à ta charge. Une fois l\'article reçu et contrôlé, le remboursement (hors frais de livraison initiaux, sauf erreur ou défaut) est effectué dans un délai de 7 jours, par le même moyen de paiement. Les bijoux et bracelets portés ne sont pas repris.';       // ex. 'Retour possible sous 7 jours, article non porté.'
-var INFO_TAILLES = '';       // ex. 'S : 36-38 · M : 40 · L : 42 · XL : 44'
+var INFO_TAILLES = 'Vêtements (tour de poitrine) : S 88-96 cm · M 96-104 cm · L 104-112 cm · XL 112-120 cm. Chaussures (longueur du pied, approximative) : 38 = 24 cm · 39 = 24,5 cm · 40 = 25 cm · 41 = 26 cm · 42 = 26,5 cm · 43 = 27,5 cm · 44 = 28 cm · 45 = 29 cm. Les coupes varient selon les marques : en cas de doute entre deux tailles, prends la plus grande ou écris-nous sur WhatsApp avant de commander.';       // ex. 'S : 36-38 · M : 40 · L : 42 · XL : 44'
 
 // --- 7. Âge minimum pour créer un compte ---
 var AGE_MINIMUM = 16;
