@@ -19,8 +19,8 @@ var FOURNISSEURS = [];
 var COMMANDES_OUVERTES = true;
 
 // --- 4. Contact (affiché dans le chat et les pages légales) ---
-var CONTACT_EMAIL = '';      // ex. 'contact@menelki.com'
-var CONTACT_WHATSAPP = '';   // ex. '+225 07 00 00 00 00'
+var CONTACT_EMAIL = 'sethglgk@icloud.com';      // ex. 'contact@menelki.com'
+var CONTACT_WHATSAPP = '+225 07 58 32 84 09';   // ex. '+225 07 00 00 00 00'
 
 // --- 5. Paiement par mobile money (affiché après la commande) ---
 var NUMERO_WAVE = '';
@@ -28,8 +28,8 @@ var NUMERO_ORANGE = '';
 
 // --- 6. Livraison, retours, tailles (textes affichés sur le site) ---
 // var FRAIS_LIVRAISON = 2000;   // décommente pour afficher des frais fixes (en FCFA)
-var INFO_LIVRAISON = '';     // ex. 'Abidjan : 1 à 2 jours, 2 000 FCFA. International : 7 à 14 jours.'
-var INFO_RETOURS = '';       // ex. 'Retour possible sous 7 jours, article non porté.'
+var INFO_LIVRAISON = 'Livraison à Yamoussoukro : 1 000 FCFA. Livraison à Abidjan : 1 500 FCFA. Délai : 3 jours maximum après confirmation du paiement. Les frais de livraison sont confirmés avec toi avant l\'expédition.';     // ex. 'Abidjan : 1 à 2 jours, 2 000 FCFA. International : 7 à 14 jours.'
+var INFO_RETOURS = 'Tu peux demander un retour dans un délai de 7 jours après la réception, pour un article non porté, non lavé, avec ses étiquettes et dans son état d\'origine. Contacte-nous d\'abord par WhatsApp ou par e-mail avec ton numéro de commande. Si l\'article est défectueux ou ne correspond pas à ta commande, MENELKI prend en charge les frais de retour. Dans les autres cas, les frais de retour sont à ta charge. Une fois l\'article reçu et contrôlé, le remboursement (hors frais de livraison initiaux, sauf erreur ou défaut) est effectué dans un délai de 7 jours, par le même moyen de paiement. Les bijoux et bracelets portés ne sont pas repris.';       // ex. 'Retour possible sous 7 jours, article non porté.'
 var INFO_TAILLES = '';       // ex. 'S : 36-38 · M : 40 · L : 42 · XL : 44'
 
 // --- 7. Âge minimum pour créer un compte ---
@@ -42,7 +42,7 @@ var LIEN_YOUTUBE = '';
 var LIEN_FACEBOOK = '';
 
 // --- 9. Mentions légales (éditeur du site) ---
-var EDITEUR_NOM = '';        // ton nom ou celui de ta société
-var EDITEUR_STATUT = '';     // ex. 'Entrepreneur individuel'
-var EDITEUR_ADRESSE = '';
+var EDITEUR_NOM = 'Kouakou Inza Seth (MENELKI)';        // ton nom ou celui de ta société
+var EDITEUR_STATUT = 'Entrepreneur individuel';     // ex. 'Entrepreneur individuel'
+var EDITEUR_ADRESSE = 'QPGW+XF Yamoussoukro, Côte d\'Ivoire';
 var EDITEUR_NUMERO = '';     // numéro d'immatriculation, si tu en as un
