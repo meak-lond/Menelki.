@@ -464,7 +464,7 @@
     confirmation(r.data.id, r.data.total);
   }
 
-  // Paiement en ligne FedaPay : la fonction Supabase « creer-paiement » renvoie le lien de paiement.
+  // Paiement en ligne CinetPay : la fonction Supabase « creer-paiement-cinetpay » renvoie le lien de paiement.
   // Le montant n'est jamais envoyé par le navigateur : le serveur le relit dans la commande.
   async function payerEnLigne(id, total) {
     var z = $('panier-lignes');
@@ -472,7 +472,7 @@
     z.appendChild(el('p', 'total-l', 'Commande n°' + id + ' enregistrée.'));
     z.appendChild(el('p', '', 'Redirection vers le paiement sécurisé…'));
     var res = null;
-    try { res = await db.functions.invoke('creer-paiement', { body: { commande_id: id } }); } catch (e) { res = { error: e }; }
+    try { res = await db.functions.invoke('creer-paiement-cinetpay', { body: { commande_id: id } }); } catch (e) { res = { error: e }; }
     if (res && !res.error && res.data && res.data.url) { window.location.href = res.data.url; return; }
     // Si le paiement en ligne échoue, la commande existe déjà : on propose le paiement manuel.
     confirmation(id, total);
