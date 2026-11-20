@@ -1415,7 +1415,7 @@
       ['Commandes', ouvert, ouvert ? 'Ouvertes aux clients' : 'Vitrine seulement : personne ne peut encore commander', 'COMMANDES_OUVERTES = true'],
       ['E-mail de contact', !!cfg('CONTACT_EMAIL'), cfg('CONTACT_EMAIL')],
       ['WhatsApp de contact', !!cfg('CONTACT_WHATSAPP'), cfg('CONTACT_WHATSAPP')],
-      ['Numéro Wave', !!cfg('NUMERO_WAVE'), cfg('NUMERO_WAVE')],
+      ['Paiement Wave (lien)', !!(cfg('LIEN_WAVE') || cfg('NUMERO_WAVE')), cfg('LIEN_WAVE') || cfg('NUMERO_WAVE')],
       ['Numéro Orange Money', !!cfg('NUMERO_ORANGE'), cfg('NUMERO_ORANGE')],
       ['Infos de livraison', !!cfg('INFO_LIVRAISON'), cfg('INFO_LIVRAISON')],
       ['Infos de retours', !!cfg('INFO_RETOURS'), cfg('INFO_RETOURS')],

@@ -23,8 +23,9 @@ var CONTACT_EMAIL = 'sethglgk@icloud.com';      // ex. 'contact@menelki.com'
 var CONTACT_WHATSAPP = '+225 07 58 32 84 09';   // ex. '+225 07 00 00 00 00'
 
 // --- 5. Paiement par mobile money (affiché après la commande) ---
-var NUMERO_WAVE = '';
-var NUMERO_ORANGE = '';
+var LIEN_WAVE = 'https://pay.wave.com/m/M_ci_gC8-1W2xPLpz/c/ci/';   // lien de paiement Wave Business (le montant est ajouté automatiquement)
+var NUMERO_WAVE = '';                  // facultatif : numéro Wave à afficher en plus du lien
+var NUMERO_ORANGE = '07 58 32 84 09';  // numéro Orange Money Business
 
 // --- 6. Livraison, retours, tailles (textes affichés sur le site) ---
 // var FRAIS_LIVRAISON = 2000;   // décommente pour afficher des frais fixes (en FCFA)

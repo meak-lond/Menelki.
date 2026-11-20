@@ -593,3 +593,14 @@ html{background:#f9e7d4}
 #ob-nb:not(:empty){background:var(--bordeaux);color:#f9e7d4}
 .zones-liv{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .zones-liv .option-paiement{margin:0}
+
+/* ===== Paiement mobile money : écran de confirmation ===== */
+.pay-carte{margin:14px 0;padding:18px 16px;border:1.5px solid var(--cuivre);border-radius:20px;background:var(--noir2);text-align:center}
+.pay-titre{font-size:.72rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;margin:0 0 6px}
+.pay-montant{font-size:1.5rem;font-weight:600;margin:0 0 10px}
+.pay-num{font-size:1.15rem;font-weight:600;letter-spacing:.06em;margin:4px 0 10px}
+.pay-carte .pay-num:last-child{margin-bottom:0}
+.pay-btn{width:100%;min-height:52px;margin-top:8px;border-radius:16px;letter-spacing:.14em;text-align:center;text-decoration:none}
+.pay-btn.clair{background:transparent;color:var(--blanc);border-color:var(--cuivre)}
+.pay-btn.clair:hover{background:var(--cuivre);color:#100906}
+.pay-note{font-size:.8rem;color:var(--texte2);margin-top:14px;line-height:1.5}

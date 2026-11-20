@@ -437,7 +437,7 @@
     var o1 = el('label', 'option-paiement'); var r1 = el('input'); r1.type = 'radio'; r1.name = 'paiement'; r1.value = 'en_ligne'; r1.checked = true;
     o1.appendChild(r1); o1.appendChild(document.createTextNode(' Payer en ligne (Wave, Orange Money, MTN, Moov, carte)'));
     var o2 = el('label', 'option-paiement'); var r2 = el('input'); r2.type = 'radio'; r2.name = 'paiement'; r2.value = 'manuel';
-    o2.appendChild(r2); o2.appendChild(document.createTextNode(' Mobile money manuel (je t\'envoie le montant)'));
+    o2.appendChild(r2); o2.appendChild(document.createTextNode(' Wave ou Orange Money : je paie moi-même après la commande'));
     zb.appendChild(o1); zb.appendChild(o2);
     var bv = el('button', 'btn', 'Terminer ma commande');
     bv.addEventListener('click', commander);
@@ -479,16 +479,56 @@
     z.insertBefore(el('p', 'err', "Le paiement en ligne n'est pas disponible pour le moment. Tu peux payer par mobile money comme indiqué ci-dessous."), z.children[1]);
   }
 
+  function copierTexte(txt, bouton) {
+    var ok = function () { var t = bouton.textContent; bouton.textContent = 'Copié ✓'; setTimeout(function () { bouton.textContent = t; }, 2000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(ok, function () {}); return; }
+    var ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); ok(); } catch (e) {} document.body.removeChild(ta);
+  }
+
   function confirmation(id, total) {
     var z = $('panier-lignes');
     z.textContent = ''; $('panier-bas').textContent = ''; $('panier-msg').textContent = ''; $('panier-msg').className = '';
     z.appendChild(el('p', 'total-l', 'Commande n°' + id + ' enregistrée.'));
     z.appendChild(el('p', '', 'Pour la valider, envoie ' + fcfa(total) + ' par mobile money en indiquant le numéro de commande ' + id + ' en référence.'));
-    var wave = cfg('NUMERO_WAVE'), om = cfg('NUMERO_ORANGE');
-    if (wave) z.appendChild(el('p', '', 'Wave : ' + wave));
-    if (om) z.appendChild(el('p', '', 'Orange Money : ' + om));
-    if (!wave && !om) z.appendChild(el('p', '', 'Nous te contacterons au numéro indiqué pour finaliser le paiement.'));
-    z.appendChild(el('p', '', 'Ta commande sera préparée dès la réception du paiement.'));
+    var lienWave = cfg('LIEN_WAVE'), wave = cfg('NUMERO_WAVE'), om = cfg('NUMERO_ORANGE');
+    var chiffres = function (t) { return String(t).replace(/[^0-9]/g, ''); };
+    if (lienWave) {
+      var cw = el('div', 'pay-carte');
+      cw.appendChild(el('h4', 'pay-titre', 'Wave'));
+      cw.appendChild(el('p', 'pay-montant', fcfa(total)));
+      var aw = el('a', 'btn pay-btn', 'Payer avec Wave');
+      aw.href = lienWave + (lienWave.indexOf('?') < 0 ? '?' : '&') + 'amount=' + Math.round(Number(total));
+      aw.target = '_blank'; aw.rel = 'noopener';
+      cw.appendChild(aw);
+      if (wave) { cw.appendChild(el('p', 'pay-num', 'Ou envoie à ce numéro : ' + wave)); }
+      z.appendChild(cw);
+    } else if (wave) {
+      var cw2 = el('div', 'pay-carte');
+      cw2.appendChild(el('h4', 'pay-titre', 'Wave'));
+      cw2.appendChild(el('p', 'pay-num', wave));
+      var bw = el('button', 'btn pay-btn clair', 'Copier le numéro'); bw.type = 'button';
+      bw.addEventListener('click', function () { copierTexte(chiffres(wave), bw); });
+      cw2.appendChild(bw); z.appendChild(cw2);
+    }
+    if (om) {
+      var co = el('div', 'pay-carte');
+      co.appendChild(el('h4', 'pay-titre', 'Orange Money'));
+      co.appendChild(el('p', 'pay-montant', fcfa(total)));
+      co.appendChild(el('p', 'pay-num', om));
+      var bo = el('button', 'btn pay-btn clair', 'Copier le numéro'); bo.type = 'button';
+      bo.addEventListener('click', function () { copierTexte(chiffres(om), bo); });
+      co.appendChild(bo); z.appendChild(co);
+    }
+    if (!lienWave && !wave && !om) z.appendChild(el('p', '', 'Nous te contacterons au numéro indiqué pour finaliser le paiement.'));
+    var wa = chiffres(cfg('CONTACT_WHATSAPP'));
+    if (wa) {
+      var j = el('a', 'btn pay-btn clair', "J'ai payé · WhatsApp");
+      j.href = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('Bonjour MENELKI, je viens de payer la commande n°' + id + ' (' + fcfa(total) + ') par mobile money. Voici la capture du paiement.');
+      j.target = '_blank'; j.rel = 'noopener';
+      z.appendChild(j);
+    }
+    z.appendChild(el('p', 'pay-note', 'Ta commande sera préparée dès la réception du paiement. Livraison sous 3 jours maximum.'));
   }
 
   function ouvrirPanier() { $('panier-fond').classList.add('open'); $('panier-titre').textContent = 'Mon panier'; $('panier-msg').textContent = ''; dessinerPanier(); }
