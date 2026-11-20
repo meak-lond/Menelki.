@@ -608,7 +608,7 @@
       ligne += ' C' + mx + ',' + p1[1] + ' ' + mx + ',' + p2[1] + ' ' + p2[0] + ',' + p2[1];
     }
     var aire = ligne + ' L' + pts[pts.length - 1][0] + ',' + (ph + ih) + ' L' + pts[0][0] + ',' + (ph + ih) + ' Z';
-    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Courbe des ventes"><defs><linearGradient id="deg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe5ee" stop-opacity=".38"/><stop offset="1" stop-color="#8d93a0" stop-opacity="0"/></linearGradient><filter id="lueur" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Courbe des ventes"><defs><linearGradient id="deg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9964f" stop-opacity=".38"/><stop offset="1" stop-color="#886C5F" stop-opacity="0"/></linearGradient><filter id="lueur" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
     for (var t = 0; t <= 4; t++) {
       var v = max * t / 4, y = Y(v);
       g += '<line class="grille" x1="' + pg + '" x2="' + (W - pd) + '" y1="' + y + '" y2="' + y + '"/><text class="axe" x="' + (pg - 8) + '" y="' + (y + 3) + '" text-anchor="end">' + court(v) + '</text>';
@@ -618,13 +618,13 @@
       if (n - 1 - i2 < pas * 0.6 && i2 !== n - 1) { continue; }
       g += '<text class="axe" x="' + X(i2) + '" y="' + (H - 6) + '" text-anchor="' + (i2 === 0 ? 'start' : (i2 >= n - 1 ? 'end' : 'middle')) + '">' + jours[i2].d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) + '</text>';
     }
-    g += '<path d="' + aire + '" fill="url(#deg)"/><path d="' + ligne + '" fill="none" stroke="#eef2f8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" filter="url(#lueur)"/>';
+    g += '<path d="' + aire + '" fill="url(#deg)"/><path d="' + ligne + '" fill="none" stroke="#e0a063" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" filter="url(#lueur)"/>';
     pts.forEach(function (p, i) {
       var v0 = jours[i].v; if (!v0) { return; }
       if (n > 31) { var a0 = i ? jours[i - 1].v : 0, b0 = i < n - 1 ? jours[i + 1].v : 0; if (v0 < a0 || v0 < b0) { return; } }
-      g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#07080a" stroke="#eef2f8" stroke-width="2" filter="url(#lueur)"/>';
+      g += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="4" fill="#100906" stroke="#e0a063" stroke-width="2" filter="url(#lueur)"/>';
     });
-    g += '<line id="g-trait" y1="' + ph + '" y2="' + (ph + ih) + '" stroke="#b7b7b7" stroke-dasharray="3 3" opacity="0"/><circle id="g-point" r="5" fill="#050505" stroke="#f2f2f2" stroke-width="2" opacity="0"/></svg>';
+    g += '<line id="g-trait" y1="' + ph + '" y2="' + (ph + ih) + '" stroke="#c9b3a0" stroke-dasharray="3 3" opacity="0"/><circle id="g-point" r="5" fill="#100906" stroke="#f9e7d4" stroke-width="2" opacity="0"/></svg>';
     z.innerHTML = g;
     if (!total) { z.appendChild(el('div', 'vide-graph', 'Aucune vente sur cette période.')); }
     var bulle = el('div', 'info-bulle'); bulle.hidden = true; z.appendChild(bulle);
@@ -674,7 +674,7 @@
     var max = joliMax(Math.max.apply(null, mois.map(function (m) { return m.v; })));
     var X = function (i) { return pg + (i + 0.5) * iw / mois.length; };
     var Y = function (v) { return ph + ih - (v / max) * ih; };
-    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Chiffre d’affaires mensuel"><defs><linearGradient id="degm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f7fb"/><stop offset="1" stop-color="#5d6471"/></linearGradient><filter id="lueurm" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Chiffre d’affaires mensuel"><defs><linearGradient id="degm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9964f"/><stop offset="1" stop-color="#611927"/></linearGradient><filter id="lueurm" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
     for (var t = 0; t <= 4; t++) {
       var vv = max * t / 4, y = Y(vv);
       g += '<line class="grille" x1="' + pg + '" x2="' + (W - pd) + '" y1="' + y + '" y2="' + y + '"/><text class="axe" x="' + (pg - 8) + '" y="' + (y + 3) + '" text-anchor="end">' + court(vv) + '</text>';
@@ -684,7 +684,7 @@
       var x = X(i), y2 = Y(m.v), h2 = ph + ih - y2;
       var nomMois = m.d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
       g += '<rect x="' + (x - lar / 2) + '" y="' + y2 + '" width="' + lar + '" height="' + h2 + '" rx="6" fill="url(#degm)" filter="url(#lueurm)" opacity=".92"><title>' + nomMois + ' : ' + m.v.toLocaleString('fr-FR') + ' FCFA</title></rect>';
-      if (m.v > 0) { g += '<text class="axe" x="' + x + '" y="' + (y2 - 6) + '" text-anchor="middle" style="fill:#f2f2f2">' + court(m.v) + '</text>'; }
+      if (m.v > 0) { g += '<text class="axe" x="' + x + '" y="' + (y2 - 6) + '" text-anchor="middle" style="fill:#f9e7d4">' + court(m.v) + '</text>'; }
       g += '<text class="axe" x="' + x + '" y="' + (H - 8) + '" text-anchor="middle">' + m.d.toLocaleDateString('fr-FR', { month: 'short' }) + '</text>';
     });
     z.innerHTML = g + '</svg>';

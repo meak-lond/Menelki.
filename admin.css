@@ -414,3 +414,95 @@ input:focus,select:focus,textarea:focus{border-color:rgba(var(--lueur),.6);box-s
   .principal main{padding-bottom:max(80px,calc(40px + env(safe-area-inset-bottom)))}
   #toasts{top:max(12px,env(safe-area-inset-top))}
 }
+
+/* ===== Nouveau design MENELKI : palette brun / bordeaux / cuivre / crème (v16) ===== */
+:root{
+  --noir:#100906;--lateral:#100906;--carte:#261D16;--acier:#4a372c;
+  --blanc:#f9e7d4;--argent:#c9b3a0;--doux:#a08c7e;--bord:rgba(249,231,212,.11);
+  --bordeaux:#611927;--cuivre:#b87a3c;--cuivre-clair:#d9964f;--creme:#f9e7d4;--brun:#261D16;--brun-fonce:#100906;
+  --lueur:184,122,60;--ok:#9bd4a6;--err:#ff9f93
+}
+html{background:#100906}
+body{background:radial-gradient(900px 520px at 90% -8%,rgba(184,122,60,.16),transparent 62%),radial-gradient(800px 560px at -5% 105%,rgba(97,25,39,.38),transparent 60%),#100906;background-attachment:fixed;color:var(--creme)}
+::selection{background:rgba(184,122,60,.45)}
+label,.kpi-nom,.bloc-det h3{color:var(--argent)}
+.aide,.vide{color:var(--doux)}
+
+/* champs et boutons */
+input,select,textarea{background:#1a120d;border-color:#4a372c;color:var(--creme);border-radius:14px}
+input::placeholder,textarea::placeholder{color:#8a766a}
+input[type=checkbox]{accent-color:var(--cuivre)}
+.btn{background:linear-gradient(180deg,#c98a48,#b87a3c);color:#100906;border-color:#b87a3c;border-radius:14px}
+.btn:hover{background:transparent;color:var(--creme);border-color:var(--cuivre)}
+.btn.clair{background:transparent;color:var(--creme);border-color:rgba(249,231,212,.38)}
+.btn.clair:hover{background:var(--creme);color:#100906;border-color:var(--creme)}
+.btn.danger{background:transparent;color:var(--err);border-color:rgba(255,159,147,.5)}
+.btn.danger:hover{background:var(--err);color:#100906}
+.retour,.lien{color:var(--cuivre-clair)}
+.photo,.art .mini{background:#1a120d;border-color:#4a372c}
+.photo .etiq{background:var(--cuivre);color:#100906}
+.art:hover{background:rgba(184,122,60,.08)}
+
+/* menu latéral : bandeau sombre, opaque */
+#lateral{background:linear-gradient(180deg,#1a0f0b,#100906);border-right:1px solid rgba(184,122,60,.22);box-shadow:none}
+.nav-lien{color:var(--argent)}
+.nav-lien:hover{background:rgba(184,122,60,.10);color:var(--creme)}
+.nav-lien.actif{background:linear-gradient(90deg,rgba(184,122,60,.24),rgba(97,25,39,.28));color:var(--creme);box-shadow:inset 0 0 0 1px rgba(184,122,60,.35)}
+.nav-lien.actif::before{background:var(--cuivre-clair);box-shadow:0 0 10px rgba(217,150,79,.7)}
+.nav-lien.actif svg{filter:none}
+.nav-lien .nb{background:var(--cuivre);color:#100906}
+.profil-bas{border:1px solid rgba(184,122,60,.22);background:rgba(97,25,39,.22)}
+.avatar{background:linear-gradient(135deg,#611927,#8a2a3d);color:var(--creme);box-shadow:0 0 0 2px rgba(184,122,60,.7)}
+.lien-boutique{color:var(--argent)}
+
+/* barre du haut : opaque (pas de transparence) */
+.haut{background:rgba(16,9,6,.97);border-bottom:1px solid rgba(184,122,60,.22)}
+.recherche-haut input{background-color:rgba(249,231,212,.06);border:1px solid rgba(184,122,60,.30)}
+.recherche-haut input:focus{border-color:var(--cuivre);box-shadow:0 0 0 3px rgba(184,122,60,.18)}
+.icone.cloche{background:rgba(97,25,39,.55);border:1px solid rgba(184,122,60,.55);color:var(--creme);box-shadow:none}
+.icone.cloche svg{filter:none}
+.cloche #pastille{background:var(--cuivre);color:#100906;box-shadow:none}
+.date-jour{border-color:rgba(184,122,60,.28);background:rgba(249,231,212,.05);color:var(--argent)}
+
+/* cartes */
+.kpi,.carte-bloc,.bloc-det,.mini,.cmd-ligne,.promo-ligne{background:linear-gradient(160deg,#2c2119,#1f1711);border:1px solid rgba(184,122,60,.18);border-radius:18px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.cmd-ligne:hover,.promo-ligne:hover{background:#33261d;border-color:rgba(184,122,60,.5);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+#kpis .kpi:first-child{background:linear-gradient(160deg,#4a1623,#2a0e17);border-color:rgba(217,150,79,.65);box-shadow:0 0 0 1px rgba(184,122,60,.25),0 10px 28px rgba(97,25,39,.45)}
+.kpi-ico{background:rgba(184,122,60,.14);border:1px solid rgba(184,122,60,.45);color:var(--cuivre-clair);box-shadow:none}
+.kpi-ico svg{filter:none}
+.kpi-val small,.bloc-total small{color:var(--doux)}
+.delta{background:rgba(249,231,212,.05);border-color:rgba(249,231,212,.2);color:var(--argent)}
+.delta.hausse{box-shadow:none}.delta.baisse{box-shadow:none}
+.periodes{border-color:rgba(184,122,60,.35)}
+.periodes button{color:var(--argent)}
+.periodes button.actif{background:linear-gradient(180deg,#c98a48,#b87a3c);color:#100906;box-shadow:none}
+.filtres button{border-color:rgba(184,122,60,.35);color:var(--argent)}
+.filtres button b{color:var(--creme)}
+.filtres button.actif{background:var(--cuivre);border-color:var(--cuivre);color:#100906;box-shadow:none}
+.filtres button.actif b{color:#100906}
+
+/* graphiques et barres */
+.graph .grille{stroke:rgba(249,231,212,.10)}
+.graph .axe{fill:#a08c7e}
+.info-bulle{background:#1a120d;border-color:rgba(184,122,60,.5);box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.barre{background:rgba(249,231,212,.10)}
+.barre i{background:linear-gradient(90deg,#611927,#d9964f);box-shadow:none}
+.ligne-top.riche .vignette{background:rgba(184,122,60,.10);border-color:rgba(184,122,60,.3);color:var(--cuivre-clair)}
+.tab-tete{border-color:rgba(184,122,60,.25)}
+
+/* pastilles de statut : sans lueur, plus sobres */
+.pill{background:rgba(249,231,212,.05);box-shadow:none!important}
+.pill.en_attente,.pill.nouveau{color:#f0c46a;border-color:rgba(240,196,106,.45);background:rgba(240,196,106,.10)}
+
+/* chronologie, notifications, divers */
+.chrono{border-left-color:rgba(184,122,60,.4)}
+.chrono li::before{background:#100906;border-color:var(--cuivre-clair);box-shadow:none}
+.citation{border-left-color:var(--cuivre)}
+.toast{background:linear-gradient(160deg,#33261d,#1a120d);border:1px solid rgba(184,122,60,.6);box-shadow:0 12px 36px rgba(0,0,0,.6)}
+.toast .t-ico{background:rgba(184,122,60,.16);border-color:rgba(184,122,60,.5);box-shadow:none}
+.toast .t-voir{background:var(--cuivre);color:#100906;box-shadow:none}
+.etat-direct::before{background:#886C5F}
+.solo-boite{background:linear-gradient(160deg,#2c2119,#1a120d);border:1px solid rgba(184,122,60,.3);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.stepper{border-color:rgba(184,122,60,.4)}
+.btn:hover{box-shadow:none}
+#hors-ligne{background:#3a0f1b;color:#f0c46a;border-bottom-color:rgba(240,196,106,.5)}
