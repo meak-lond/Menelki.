@@ -427,6 +427,7 @@
     marketing: '<path d="m3 11 18-7v16L3 13z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
     reglages: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
     burger: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    plus: '<circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/>',
     cloche: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
     sortie: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
     argent: '<path d="M12 2v20"/><path d="M17 6.5A4 4 0 0 0 13 5h-2.5a3.5 3.5 0 0 0 0 7h3a3.5 3.5 0 0 1 0 7H10a4 4 0 0 1-4-1.5"/>',
@@ -459,12 +460,49 @@
     $('nav').appendChild(b);
   });
 
+  // ----- Barre du bas (iPhone) -----
+  var BARRE = [
+    { id: 'tableau', nom: 'Accueil', ico: 'tableau' },
+    { id: 'commandes', nom: 'Commandes', ico: 'commandes', nb: 'nav-nb' },
+    { id: 'produits', nom: 'Produits', ico: 'produits', nb: 'nav-nb-prod' },
+    { id: 'plus', nom: 'Plus', ico: 'plus', nb: 'nav-nb-ret' }
+  ];
+  var barreBas = el('nav', ''); barreBas.id = 'barre-bas'; barreBas.setAttribute('aria-label', 'Navigation principale');
+  BARRE.forEach(function (t) {
+    var b = el('button', 'onglet'); b.id = 'onglet-' + t.id; b.innerHTML = svg(t.ico);
+    b.appendChild(el('span', 'onglet-nom', t.nom));
+    if (t.nb) {
+      var pastille = el('i', 'onglet-nb'); pastille.hidden = true; b.appendChild(pastille);
+      var src = $(t.nb);
+      if (src && window.MutationObserver) {
+        var sync = function () { var n = (src.textContent || '').trim(); pastille.textContent = n; pastille.hidden = src.hidden || !n || n === '0'; };
+        new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true, attributes: true });
+        sync();
+      }
+    }
+    b.addEventListener('click', function () {
+      if (t.id === 'plus') { $('lateral').classList.add('ouvert'); $('voile').classList.add('ouvert'); } else { aller(t.id); }
+    });
+    barreBas.appendChild(b);
+  });
+  $('app').appendChild(barreBas);
+  function majBarre(id) {
+    BARRE.forEach(function (t) {
+      var actif = t.id === 'plus' ? ['tableau', 'commandes', 'produits'].indexOf(id) < 0 : t.id === id;
+      $('onglet-' + t.id).classList.toggle('actif', actif);
+    });
+  }
+  // Le clavier de l'iPhone masque la barre pendant la saisie
+  document.addEventListener('focusin', function (e) { if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) { document.body.classList.add('saisie'); } });
+  document.addEventListener('focusout', function () { document.body.classList.remove('saisie'); });
+
   function aller(id) {
     var v = VUES.filter(function (x) { return x.id === id; })[0] || VUES[0];
     vueActive = v.id;
     ['v-tableau', 'v-produits', 'v-commandes', 'v-retours', 'v-clients', 'v-stats', 'v-marketing', 'v-reglages', 'v-bientot'].forEach(function (x) { $(x).hidden = true; });
     VUES.forEach(function (x) { $('nav-' + x.id).classList.toggle('actif', x.id === v.id); });
     $('titre-vue').textContent = v.nom;
+    majBarre(v.id);
     try { history.replaceState(null, '', '#' + v.id); } catch (e) {}
     if (v.id === 'tableau') { $('v-tableau').hidden = false; chargerTableau(); }
     else if (v.id === 'commandes') { $('v-commandes').hidden = false; montrerCmd('liste'); promesseCmd = chargerCommandes(); }

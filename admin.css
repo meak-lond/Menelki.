@@ -506,3 +506,39 @@ input[type=checkbox]{accent-color:var(--cuivre)}
 .stepper{border-color:rgba(184,122,60,.4)}
 .btn:hover{box-shadow:none}
 #hors-ligne{background:#3a0f1b;color:#f0c46a;border-bottom-color:rgba(240,196,106,.5)}
+
+/* ===== Étape 2 : navigation iPhone (barre du bas) et écrans commandes / retours / produits (v17) ===== */
+#barre-bas{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);background:#100906;border-top:1px solid rgba(184,122,60,.35);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.onglet{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:54px;background:none;border:none;border-radius:14px;color:var(--doux);font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.onglet svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.onglet-nom{font-size:.6rem;font-weight:500;letter-spacing:.06em}
+.onglet.actif{color:var(--cuivre-clair);background:rgba(184,122,60,.13)}
+.onglet.actif .onglet-nom{font-weight:600}
+.onglet-nb{position:absolute;top:3px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--cuivre);color:#100906;font-style:normal;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+body.saisie #barre-bas{display:none}
+.principal main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+#toasts{top:max(12px,env(safe-area-inset-top))}
+@media(min-width:900px){#barre-bas{display:none}.principal main{padding-bottom:80px}}
+
+/* commandes, retours, produits : lecture plus aérée sur téléphone */
+#rech-cmd,#rech-ret,#recherche{margin-top:4px}
+.cmd-ligne{padding:16px 14px;min-height:64px}
+.cmd-ligne .qui{font-size:.9rem}
+.cmd-ligne .montant{font-size:.9rem;font-weight:600;color:var(--creme)}
+.cmd-ligne .quand{color:var(--doux)}
+.detail-tete{flex-wrap:wrap}
+.actions-cmd .btn{min-height:50px}
+.badge{border-color:rgba(184,122,60,.45);color:var(--argent);background:rgba(184,122,60,.08);border-radius:9px}
+.badge.alerte{border-color:var(--err);color:var(--err);background:rgba(255,159,147,.08)}
+.badge.orange{border-color:#f0aa3c;color:#f0aa3c;background:rgba(240,170,60,.08)}
+.art{min-height:84px}
+.art .prix{color:var(--cuivre-clair);font-weight:500}
+.art .nom{color:var(--creme)}
+.art-carte{border-bottom:1px solid rgba(184,122,60,.18)}
+.stepper button{color:var(--creme)}
+.stepper button.val{border-color:rgba(184,122,60,.3)}
+.duo-select select{min-height:48px}
+.alerte-stock{border-radius:14px}
+.mini b{color:var(--creme)}
+.art-l,.tot-l,.mini-cmd,.news-ligne,.rg-ligne,.ligne-top,.ligne-cmd{border-color:rgba(249,231,212,.10)}
+.tot-l.fort{color:var(--creme);border-top-color:rgba(184,122,60,.35)}
