@@ -542,3 +542,33 @@ body.saisie #barre-bas{display:none}
 .mini b{color:var(--creme)}
 .art-l,.tot-l,.mini-cmd,.news-ligne,.rg-ligne,.ligne-top,.ligne-cmd{border-color:rgba(249,231,212,.10)}
 .tot-l.fort{color:var(--creme);border-top-color:rgba(184,122,60,.35)}
+
+/* ===== Étape 3 : finitions (v18) ===== */
+/* cases à cocher aux couleurs de la marque */
+input[type=checkbox]{-webkit-appearance:none;appearance:none;flex:0 0 22px;width:22px;height:22px;padding:0;margin:0;border:1.5px solid #886C5F;border-radius:7px;background:#1a120d;display:inline-grid;place-content:center;cursor:pointer;transition:background .15s,border-color .15s}
+input[type=checkbox]::after{content:"";width:11px;height:6px;border-left:2.5px solid #100906;border-bottom:2.5px solid #100906;transform:rotate(-45deg) translate(1px,-1px) scale(0);transition:transform .12s}
+input[type=checkbox]:checked{background:var(--cuivre);border-color:var(--cuivre)}
+input[type=checkbox]:checked::after{transform:rotate(-45deg) translate(1px,-1px) scale(1)}
+input[type=checkbox]:focus-visible{outline:2px solid var(--cuivre-clair);outline-offset:2px;box-shadow:none}
+.case{min-height:44px}
+
+/* boutons Appeler / WhatsApp */
+.contacts{gap:10px}
+.contacts a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 20px;border:1px solid rgba(184,122,60,.55);border-radius:12px;background:rgba(184,122,60,.08);color:var(--creme);font-weight:500}
+.contacts a:hover,.contacts a:active{background:var(--cuivre);border-color:var(--cuivre);color:#100906}
+
+/* lien « Retour » plus facile à toucher */
+.retour{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-bottom:6px;padding:0 14px 0 0;font-size:.74rem;font-weight:500;text-decoration:none;color:var(--cuivre-clair)}
+
+/* messages « rien à afficher » */
+.vide{text-align:center;padding:34px 20px;margin-top:14px;border:1px dashed rgba(184,122,60,.38);border-radius:16px;background:rgba(184,122,60,.05);color:var(--argent);font-size:.86rem;line-height:1.65}
+
+/* courbes : lueur plus discrète, lecture plus nette */
+.graph svg path[filter],.graph svg circle[filter]{filter:drop-shadow(0 0 3px rgba(217,150,79,.45))}
+.info-bulle b{color:var(--creme)}
+
+/* titres de détail et détails d'une commande */
+.detail-tete h2{font-size:1.05rem}
+.bloc-det h3{letter-spacing:.18em}
+.mini-cmd{border-color:rgba(249,231,212,.10)}
+.note-zone textarea{min-height:96px}
