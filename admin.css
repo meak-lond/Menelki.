@@ -572,3 +572,39 @@ input[type=checkbox]:focus-visible{outline:2px solid var(--cuivre-clair);outline
 .bloc-det h3{letter-spacing:.18em}
 .mini-cmd{border-color:rgba(249,231,212,.10)}
 .note-zone textarea{min-height:96px}
+
+/* ===== Liquid glass (administration) : verre sombre, barre du bas flottante, fond lumineux doux ===== */
+:root{
+  --v-bord:rgba(255,255,255,.16);
+  --v-fond:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.04));
+  --v-ombre:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(255,255,255,.05);
+  --v-flou:blur(26px) saturate(180%);
+}
+/* le verre a besoin de couleurs à flouter derrière lui */
+body{background:radial-gradient(520px 420px at 92% 4%,rgba(184,122,60,.42),transparent 70%),radial-gradient(560px 460px at 2% 38%,rgba(97,25,39,.62),transparent 70%),radial-gradient(520px 420px at 98% 70%,rgba(184,122,60,.26),transparent 70%),radial-gradient(600px 480px at 10% 100%,rgba(97,25,39,.55),transparent 70%),#100906;background-attachment:fixed;background-repeat:no-repeat}
+.kpi,.carte-bloc,.bloc-det,.mini,.cmd-ligne,.promo-ligne,.art,.stepper,.solo-boite,.alerte-stock,.citation{background:var(--v-fond);border:1px solid var(--v-bord);box-shadow:var(--v-ombre)}
+.cmd-ligne:hover,.promo-ligne:hover,.art:hover{background:linear-gradient(160deg,rgba(255,255,255,.19),rgba(255,255,255,.07))}
+input,select,textarea{background:rgba(255,255,255,.07);border:1px solid var(--v-bord);box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
+input:focus,select:focus,textarea:focus{background:rgba(255,255,255,.11);border-color:rgba(217,150,79,.7)}
+.periodes,.filtres button{background:rgba(255,255,255,.06);border-color:var(--v-bord)}
+.periodes button.actif{background:rgba(184,122,60,.78);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.filtres button.actif{background:rgba(184,122,60,.78);border-color:rgba(255,255,255,.3);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.toast{background:rgba(38,29,22,.62);border:1px solid var(--v-bord);box-shadow:var(--v-ombre),0 14px 40px rgba(0,0,0,.45)}
+.nav-lien.actif{background:linear-gradient(90deg,rgba(184,122,60,.34),rgba(97,25,39,.38));box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 0 0 1px rgba(255,255,255,.14)}
+#lateral{background:rgba(24,15,11,.55);border-right:1px solid var(--v-bord);box-shadow:inset -1px 0 0 rgba(255,255,255,.08)}
+.haut{background:rgba(16,9,6,.45);border-bottom:1px solid var(--v-bord);box-shadow:inset 0 -1px 0 rgba(255,255,255,.06)}
+/* barre du bas : capsule de verre flottante */
+#barre-bas{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:30px;border:1px solid var(--v-bord);padding:6px;background:rgba(38,29,22,.50);box-shadow:var(--v-ombre)}
+.onglet{border-radius:24px}
+.onglet.actif{background:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+.principal main{padding-bottom:calc(116px + env(safe-area-inset-bottom))}
+@media(min-width:900px){.principal main{padding-bottom:80px}}
+@supports((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .kpi,.carte-bloc,.bloc-det,.mini,.cmd-ligne,.promo-ligne,.art,.stepper,.solo-boite,.alerte-stock,.citation,input,select,textarea,.periodes,.filtres button,.toast,#barre-bas,.haut{-webkit-backdrop-filter:var(--v-flou);backdrop-filter:var(--v-flou)}
+  #lateral{-webkit-backdrop-filter:blur(30px) saturate(170%);backdrop-filter:blur(30px) saturate(170%)}
+}
+@media(prefers-reduced-transparency:reduce){
+  .kpi,.carte-bloc,.bloc-det,.mini,.cmd-ligne,.promo-ligne,.art,.stepper,.solo-boite,.alerte-stock,.citation,.toast{background:#2c2119}
+  #lateral,.haut,#barre-bas{background:#100906}
+  input,select,textarea{background:#1a120d}
+}
