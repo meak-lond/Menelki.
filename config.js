@@ -52,4 +52,4 @@ var EDITEUR_NUMERO = '';     // numéro d'immatriculation, si tu en as un
 // Colle ici l'identifiant de mesure de ta propriété GA4 (il commence par G-).
 // Tant que cette ligne est vide, aucun outil de statistiques n'est chargé.
 // Même rempli, le suivi ne démarre que pour les visiteurs qui acceptent les cookies.
-var GA_ID = '';     // ex. 'G-ABC123DEF4'
+var GA_ID = 'G-4DH45PTQKB';     // ex. 'G-ABC123DEF4'
