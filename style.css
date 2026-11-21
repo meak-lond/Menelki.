@@ -619,3 +619,42 @@ html{background:#f9e7d4}
 .pied-marque img{grid-row:1 / 3;height:68px;width:auto}
 .pm-nom{font-family:'Space Grotesk','Inter',system-ui,sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.34em;color:var(--blanc);align-self:end}
 .pm-slogan{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--argent);align-self:start}
+
+/* ===== Liquid glass (étape 1) : barre du bas flottante, bouton panier, bouton chat, pastilles, en-tête, barre de la fiche produit ===== */
+:root{
+  --verre-bg:rgba(249,231,212,.72);
+  --verre-bord:rgba(255,255,255,.6);
+  --verre-flou:blur(22px) saturate(180%);
+  --verre-ombre:0 10px 30px rgba(38,29,22,.20),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.2);
+}
+@supports((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  header,header.fond{background:rgba(249,231,212,.78);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pastille{background:rgba(255,255,255,.5);border:1px solid var(--verre-bord);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 14px rgba(38,29,22,.08);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pastille.actif{background:rgba(97,25,39,.88);border-color:rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 18px rgba(97,25,39,.28)}
+  .fiche-barre{background:rgba(249,231,212,.80);border-top:1px solid var(--verre-bord);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  #chat-btn{background:rgba(97,25,39,.86);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 26px rgba(97,25,39,.35);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pill-panier{background:rgba(97,25,39,.86)!important;border:1px solid rgba(255,255,255,.3)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 30px rgba(97,25,39,.35)!important;-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+}
+@media(max-width:899px){
+  /* barre du bas : capsule de verre qui flotte au-dessus du contenu */
+  #onglets-bas{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border-radius:30px;border:1px solid var(--verre-bord);padding:6px;background:var(--verre-bg);box-shadow:var(--verre-ombre)}
+  @supports((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+    #onglets-bas{-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  }
+  #onglets-bas a,#onglets-bas button{border-radius:24px;transition:background .3s var(--ease),color .3s}
+  #onglets-bas .actif{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 8px rgba(38,29,22,.10)}
+  body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  .pill-panier{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+  #chat-btn{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+  body.barres-cachees #onglets-bas{transform:translateY(calc(100% + 30px + env(safe-area-inset-bottom,0px)))}
+  body.barres-cachees .pill-panier{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+  body.barres-cachees #chat-btn{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+}
+/* Accessibilité : si l'iPhone demande moins de transparence, on revient à des fonds pleins */
+@media(prefers-reduced-transparency:reduce){
+  header,header.fond{background:#f9e7d4}
+  #onglets-bas{background:#f9e7d4}
+  .pastille{background:#f3dcc3}
+  .pastille.actif,#chat-btn,.pill-panier{background:#611927!important}
+  .fiche-barre{background:#f9e7d4}
+}
