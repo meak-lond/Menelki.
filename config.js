@@ -40,7 +40,7 @@ var AGE_MINIMUM = 16;
 var LIEN_INSTAGRAM = 'https://www.instagram.com/menelki_shop';     // ex. 'https://instagram.com/menelki'
 var LIEN_TIKTOK = '';
 var LIEN_YOUTUBE = '';
-var LIEN_FACEBOOK = '';
+var LIEN_FACEBOOK = 'https://www.facebook.com/profile.php?id=61579555643124';
 
 // --- 9. Mentions légales (éditeur du site) ---
 var EDITEUR_NOM = 'Kouakou Inza Seth (MENELKI)';        // ton nom ou celui de ta société
