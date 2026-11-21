@@ -38,7 +38,7 @@ var AGE_MINIMUM = 16;
 
 // --- 8. Réseaux sociaux (l'icône n'apparaît que si le lien est rempli) ---
 var LIEN_INSTAGRAM = 'https://www.instagram.com/menelki_shop';     // ex. 'https://instagram.com/menelki'
-var LIEN_TIKTOK = '';
+var LIEN_TIKTOK = 'https://www.tiktok.com/@menelki_shop';
 var LIEN_YOUTUBE = '';
 var LIEN_FACEBOOK = 'https://www.facebook.com/profile.php?id=61579555643124';
 
