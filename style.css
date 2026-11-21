@@ -622,18 +622,18 @@ html{background:#f9e7d4}
 
 /* ===== Liquid glass (étape 1) : barre du bas flottante, bouton panier, bouton chat, pastilles, en-tête, barre de la fiche produit ===== */
 :root{
-  --verre-bg:rgba(249,231,212,.72);
+  --verre-bg:rgba(249,231,212,.42);
   --verre-bord:rgba(255,255,255,.6);
-  --verre-flou:blur(22px) saturate(180%);
+  --verre-flou:blur(28px) saturate(190%);
   --verre-ombre:0 10px 30px rgba(38,29,22,.20),inset 0 1px 0 rgba(255,255,255,.75),inset 0 -1px 0 rgba(255,255,255,.2);
 }
 @supports((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-  header,header.fond{background:rgba(249,231,212,.78);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
-  .pastille{background:rgba(255,255,255,.5);border:1px solid var(--verre-bord);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 14px rgba(38,29,22,.08);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
-  .pastille.actif{background:rgba(97,25,39,.88);border-color:rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 18px rgba(97,25,39,.28)}
-  .fiche-barre{background:rgba(249,231,212,.80);border-top:1px solid var(--verre-bord);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
-  #chat-btn{background:rgba(97,25,39,.86);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 26px rgba(97,25,39,.35);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
-  .pill-panier{background:rgba(97,25,39,.86)!important;border:1px solid rgba(255,255,255,.3)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 30px rgba(97,25,39,.35)!important;-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  header,header.fond{background:rgba(249,231,212,.50);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pastille{background:rgba(255,255,255,.34);border:1px solid var(--verre-bord);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 4px 14px rgba(38,29,22,.08);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pastille.actif{background:rgba(97,25,39,.72);border-color:rgba(255,255,255,.28);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 6px 18px rgba(97,25,39,.28)}
+  .fiche-barre{background:rgba(249,231,212,.50);border-top:1px solid var(--verre-bord);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  #chat-btn{background:rgba(97,25,39,.68);border:1px solid rgba(255,255,255,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 10px 26px rgba(97,25,39,.35);-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  .pill-panier{background:rgba(97,25,39,.70)!important;border:1px solid rgba(255,255,255,.3)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 12px 30px rgba(97,25,39,.35)!important;-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
 }
 @media(max-width:899px){
   /* barre du bas : capsule de verre qui flotte au-dessus du contenu */
@@ -642,7 +642,7 @@ html{background:#f9e7d4}
     #onglets-bas{-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
   }
   #onglets-bas a,#onglets-bas button{border-radius:24px;transition:background .3s var(--ease),color .3s}
-  #onglets-bas .actif{background:rgba(255,255,255,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 8px rgba(38,29,22,.10)}
+  #onglets-bas .actif{background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.85),0 2px 8px rgba(38,29,22,.10)}
   body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
   .pill-panier{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
   #chat-btn{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
@@ -657,4 +657,58 @@ html{background:#f9e7d4}
   .pastille{background:#f3dcc3}
   .pastille.actif,#chat-btn,.pill-panier{background:#611927!important}
   .fiche-barre{background:#f9e7d4}
+}
+
+/* ===== Liquid glass (étape 2) : plus de transparence, fond en dégradé doux et plus de sections en verre ===== */
+/* Fond coloré très doux : c'est ce que le verre floute derrière lui */
+:root{
+  --aurore:radial-gradient(60% 34% at 10% 6%,rgba(184,122,60,.50),transparent 72%),radial-gradient(55% 32% at 96% 24%,rgba(97,25,39,.34),transparent 72%),radial-gradient(60% 34% at 6% 52%,rgba(184,122,60,.36),transparent 72%),radial-gradient(55% 34% at 98% 76%,rgba(97,25,39,.30),transparent 72%),radial-gradient(60% 30% at 20% 100%,rgba(184,122,60,.42),transparent 72%);
+  --verre-clair:rgba(255,255,255,.36);
+  --verre-sombre:rgba(38,29,22,.52);
+}
+body{background:var(--aurore),var(--noir);background-repeat:no-repeat}
+#compte-fond,#espace-fond,#profil-fond,#panier-fond,#fiche-fond,#favoris-fond{background:var(--aurore),var(--noir);background-repeat:no-repeat}
+.compte{background:transparent}
+
+/* Cartes produit */
+.fiche{padding:8px 8px 12px;border-radius:28px;background:var(--verre-clair);border:1px solid var(--verre-bord);box-shadow:var(--verre-ombre)}
+.fiche .photo,.fiche .photo img{border-radius:21px}
+.fiche .infos,.fiche .prix,.fiche .btn.petit{margin-left:6px;margin-right:6px}
+.fiche .btn.petit{width:calc(100% - 12px)}
+.fiche .infos{padding-top:12px}
+
+/* Garanties */
+.garanties-wrap{background:transparent;border:0}
+.garanties{gap:10px;padding:10px 12px}
+.garanties div{border:1px solid var(--verre-bord);border-radius:24px;background:var(--verre-clair);box-shadow:var(--verre-ombre);padding:26px 12px}
+
+/* Panier, compte, paiement */
+.ligne-panier{padding:12px 14px;margin-bottom:8px;border:1px solid var(--verre-bord);border-radius:22px;background:var(--verre-clair);box-shadow:var(--verre-ombre)}
+.pay-carte{background:var(--verre-clair);border:1px solid var(--verre-bord);border-radius:26px;box-shadow:var(--verre-ombre)}
+.option-paiement{padding:12px 14px;border:1px solid var(--verre-bord);border-radius:20px;background:var(--verre-clair);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.esp-ligne{padding:16px 16px;margin-bottom:8px;width:100%;border:1px solid var(--verre-bord);border-radius:22px;background:var(--verre-clair);box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.esp-ligne:hover{padding-left:16px;background:rgba(255,255,255,.5)}
+.compte input,.compte select,.compte textarea,.esp-champ,.promo-ligne input,#panier-bas input:not([type=radio]):not([type=checkbox]){background:rgba(255,255,255,.42);border:1px solid var(--verre-bord);border-radius:18px;box-shadow:inset 0 1px 2px rgba(38,29,22,.06)}
+.chip{background:var(--verre-clair);border:1px solid var(--verre-bord)}
+
+/* Menu latéral, chat, cookies : verre sombre / clair */
+#menu-fond{background:rgba(38,29,22,.38)}
+#menu{background:var(--verre-sombre);border-right:1px solid rgba(255,255,255,.18);box-shadow:inset -1px 0 0 rgba(255,255,255,.12),0 0 60px rgba(0,0,0,.35)}
+.m-ligne{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:22px}
+.m-ligne:hover{background:rgba(255,255,255,.16);padding-left:18px}
+#chat-box{background:var(--verre-bg);border:1px solid var(--verre-bord);box-shadow:var(--verre-ombre),0 24px 60px rgba(38,29,22,.28)}
+.chat-head{background:transparent;border-bottom:1px solid rgba(255,255,255,.4)}
+.bulle:not(.moi){background:rgba(255,255,255,.5);border:1px solid var(--verre-bord)}
+.chat-saisie{border-top:1px solid rgba(255,255,255,.4)}
+#cookies{background:var(--verre-bg);border:1px solid var(--verre-bord);box-shadow:var(--verre-ombre)}
+@supports((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .fiche,.garanties div,.ligne-panier,.pay-carte,.option-paiement,.esp-ligne,.chip,#chat-box,#cookies,.compte input,.compte select,.compte textarea,.esp-champ,.promo-ligne input{-webkit-backdrop-filter:var(--verre-flou);backdrop-filter:var(--verre-flou)}
+  #menu{-webkit-backdrop-filter:blur(30px) saturate(170%);backdrop-filter:blur(30px) saturate(170%)}
+  #menu-fond{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+}
+@media(prefers-reduced-transparency:reduce){
+  body,#compte-fond,#espace-fond,#profil-fond,#panier-fond,#fiche-fond,#favoris-fond{background:#f9e7d4}
+  .fiche,.garanties div,.ligne-panier,.pay-carte,.option-paiement,.esp-ligne,.chip,#chat-box,#cookies{background:#f3dcc3}
+  #menu{background:#261d16}
+  #chat-box .bulle:not(.moi){background:#f3dcc3}
 }
