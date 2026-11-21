@@ -47,3 +47,9 @@ var EDITEUR_NOM = 'Kouakou Inza Seth (MENELKI)';        // ton nom ou celui de t
 var EDITEUR_STATUT = 'Entrepreneur individuel';     // ex. 'Entrepreneur individuel'
 var EDITEUR_ADRESSE = 'QPGW+XF Yamoussoukro, Côte d\'Ivoire';
 var EDITEUR_NUMERO = '';     // numéro d'immatriculation, si tu en as un
+
+// --- 10. Mesure d'audience (Google Analytics 4) ---
+// Colle ici l'identifiant de mesure de ta propriété GA4 (il commence par G-).
+// Tant que cette ligne est vide, aucun outil de statistiques n'est chargé.
+// Même rempli, le suivi ne démarre que pour les visiteurs qui acceptent les cookies.
+var GA_ID = '';     // ex. 'G-ABC123DEF4'

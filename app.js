@@ -144,7 +144,7 @@
   function totalPanier() { return lignes().reduce(function (t, l) { return t + l.p.prix * l.qte; }, 0); }
   function nbArticles() { return lignes().reduce(function (n, l) { return n + l.qte; }, 0); }
   function majBadge() { var n = nbArticles(); $('nb-panier').textContent = n ? String(n) : ''; document.dispatchEvent(new CustomEvent('mk-panier', { detail: { n: n, total: totalPanier() } })); }
-  function ajouter(id, taille, couleur) { var k = cle(id, taille, couleur); panier[k] = (panier[k] || 0) + 1; sauverPanier(); majBadge(); }
+  function ajouter(id, taille, couleur) { var k = cle(id, taille, couleur); panier[k] = (panier[k] || 0) + 1; sauverPanier(); majBadge(); if (window.suivi) { window.suivi('add_to_cart', { items: [{ item_id: String(id) }] }); } }
   function changer(k, d) {
     codePromo = null;
     var q = (panier[k] || 0) + d;
@@ -459,6 +459,7 @@
     if (r.error) { m.textContent = 'La commande a échoué : ' + r.error.message; m.className = 'err'; return; }
     panier = {}; sauverPanier(); majBadge();
     codePromo = null;
+    if (window.suivi) { window.suivi('commande_enregistree', { transaction_id: String(r.data.id), value: Number(r.data.total) || 0, currency: 'XOF' }); }
     var choix = document.querySelector('input[name="paiement"]:checked');
     if (choix && choix.value === 'en_ligne') { payerEnLigne(r.data.id, r.data.total); return; }
     confirmation(r.data.id, r.data.total);
@@ -818,6 +819,7 @@
   function fermerFiche() { $('fiche-fond').classList.remove('open'); }
 
   function ouvrirFiche(p) {
+    if (window.suivi) { window.suivi('view_item', { items: [{ item_id: String(p.id), item_name: p.nom || '' }] }); }
     var c = $('fiche-corps'); c.textContent = '';
     var cols = p.couleurs || [], tailles = p.tailles || [], ci = p.couleurs_images || {};
     var imgs = ((p.images && p.images.length) ? p.images : (p.image_url ? [p.image_url] : [])).map(urlImage).filter(Boolean);
@@ -982,9 +984,34 @@
   try { choixCookies = localStorage.getItem('mk_cookies'); } catch (e) {}
   window.cookiesAcceptes = (choixCookies === 'accepte');
   if (!choixCookies) { setTimeout(function () { $('cookies').classList.add('visible'); }, 3600); }
+
+  // ===== Mesure d'audience (Google Analytics 4) : seulement si GA_ID est rempli dans config.js ET si les cookies sont acceptés =====
+  var gaCharge = false;
+  function idGa() { return (typeof GA_ID === 'string' && /^G-[A-Z0-9]{4,}$/.test(GA_ID)) ? GA_ID : ''; }
+  function mesureAudience() {
+    var id = idGa();
+    if (!id) { return; }
+    window['ga-disable-' + id] = !window.cookiesAcceptes;
+    if (!window.cookiesAcceptes || gaCharge) { return; }
+    gaCharge = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', id, { anonymize_ip: true, allow_google_signals: false, allow_ad_personalization_signals: false });
+    var sc = document.createElement('script');
+    sc.async = true;
+    sc.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(id);
+    document.head.appendChild(sc);
+  }
+  // Envoie un événement seulement si la mesure est active (sinon ne fait rien)
+  window.suivi = function (nom, params) {
+    try { if (gaCharge && window.cookiesAcceptes && window.gtag) { window.gtag('event', nom, params || {}); } } catch (e) {}
+  };
+  mesureAudience();
   function repondreCookies(valeur) {
     try { localStorage.setItem('mk_cookies', valeur); } catch (e) {}
     window.cookiesAcceptes = (valeur === 'accepte');
+    mesureAudience();
     $('cookies').classList.remove('visible');
   }
   $('cookies-ok').addEventListener('click', function () { repondreCookies('accepte'); });
