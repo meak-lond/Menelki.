@@ -40,7 +40,7 @@ header.cache{transform:translateY(-100%)}
 .gauche{display:flex;align-items:center;gap:16px}
 #btn-menu{cursor:pointer;display:flex}
 .logo{display:flex;align-items:center;gap:12px;font-weight:500;letter-spacing:.5em;font-size:.9rem}
-.logo img{height:25px;width:auto}
+.logo img,.logo .eclat-h{height:25px;width:auto}
 .nav-bureau{display:none;gap:38px;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;font-weight:500}
 .nav-bureau a{position:relative;padding:6px 0;color:var(--argent);transition:color .3s}
 .nav-bureau a::after{content:"";position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--blanc);transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
@@ -387,7 +387,7 @@ footer{background:var(--noir);border-top:1px solid var(--bord);padding:clamp(48p
   .hero-sur{letter-spacing:.2em;font-size:.54rem;gap:10px}
   .hero-sur::before{width:22px}
   .logo{letter-spacing:.34em;font-size:.8rem;gap:9px}
-  .logo img{height:22px}
+  .logo img,.logo .eclat-h{height:22px}
   .icones{gap:15px}
   .gauche{gap:12px}
   .barre{gap:8px}
@@ -604,3 +604,18 @@ html{background:#f9e7d4}
 .pay-btn.clair{background:transparent;color:var(--blanc);border-color:var(--cuivre)}
 .pay-btn.clair:hover{background:var(--cuivre);color:#100906}
 .pay-note{font-size:.8rem;color:var(--texte2);margin-top:14px;line-height:1.5}
+
+/* ===== Symbole Éclat : animation d'ouverture et pied de page ===== */
+.eclat-h{display:block;overflow:visible;color:inherit}
+.eclat-h .st,.eclat-h .gl{transform-box:fill-box;transform-origin:center}
+.eclat-h .st{animation:eclatStar 1.3s cubic-bezier(.16,1,.3,1) .1s both}
+.eclat-h .sw{stroke-dasharray:1;animation:eclatSweep 1.2s cubic-bezier(.16,1,.3,1) .25s both}
+.eclat-h .gl{animation:eclatGlint 1s cubic-bezier(.16,1,.3,1) .8s both}
+@keyframes eclatStar{from{opacity:0;transform:rotate(-80deg) scale(.4)}to{opacity:1;transform:none}}
+@keyframes eclatSweep{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes eclatGlint{from{opacity:0;transform:scale(0) rotate(-45deg)}60%{opacity:1;transform:scale(1.5)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.eclat-h .st,.eclat-h .sw,.eclat-h .gl{animation:none}.eclat-h .sw{stroke-dashoffset:0}}
+.pied-marque{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:18px;row-gap:4px;align-items:center;width:max-content;max-width:100%}
+.pied-marque img{grid-row:1 / 3;height:68px;width:auto}
+.pm-nom{font-family:'Space Grotesk','Inter',system-ui,sans-serif;font-weight:700;font-size:1.5rem;letter-spacing:.34em;color:var(--blanc);align-self:end}
+.pm-slogan{font-size:.62rem;letter-spacing:.34em;text-transform:uppercase;color:var(--argent);align-self:start}
