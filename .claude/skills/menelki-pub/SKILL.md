@@ -19,6 +19,12 @@ Budget : zéro pour l'instant. Tout est organique (publications, vidéos courtes
 4. Fournir les contenus prêts à copier, un par un, pour l'iPhone. Pas de longs documents.
 5. Avancer par petites étapes : un format ou une semaine à la fois.
 
+## Vidéos
+- Générateur : `scripts/make_video.py` (Python + ffmpeg, photos du lookbook et logo Éclat du dépôt). Lancer : `python3 .claude/skills/menelki-pub/scripts/make_video.py sortie.mp4`.
+- Vidéos faites : `videos/menelki-pub-01-ton-style.mp4` (13 s, « Ton style / Ton histoire / Ton attitude », fin avec slogan, livraison, paiement et `@menelki_shop`). Détails dans `references/videos.md`.
+- Toujours vérifier le rendu image par image avant d'envoyer. Les vidéos sont silencieuses : l'utilisateur ajoute la musique dans TikTok ou Instagram.
+- Les enregistrements d'écran de l'utilisateur ne servent que s'ils montrent le site avec des produits avec photos et sans bannière de mode Concentration.
+
 ## Formats
 - Vidéo verticale 9:16 (Instagram Reel, TikTok, statut WhatsApp) : 7 à 15 secondes, crochet dans la première seconde. Voir `references/formats.md`.
 - Légendes : une accroche, 2 lignes de contenu, l'appel à l'action, 5 à 8 hashtags.

@@ -6,4 +6,6 @@
 - Polices : Inter, Space Grotesk, Montserrat.
 - Logo : symbole « Éclat » (étoile + orbite), versions blanc et noir en SVG.
 - Contrastes : toujours vérifier la lisibilité du texte sur fond crème et sur fond sombre.
+- Liquid glass : fonds translucides (opacité 34 à 70 %) + `backdrop-filter: blur(28px) saturate(190%)` + liseré blanc et reflet intérieur. Le verre a besoin d'un fond coloré derrière (dégradés cuivre/bordeaux). Toujours prévoir le repli `prefers-reduced-transparency` avec des fonds pleins.
+- Barre du bas (site et admin) : capsule flottante arrondie ; garder de la marge sous le contenu.
 - Admin : même palette, avec la navigation du bas sur iPhone.
