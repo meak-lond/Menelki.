@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Clé de signature : fournie par GitHub (secrets) seulement. Jamais dans le dépôt.
+def cleFichier = System.getenv('MENELKI_KEYSTORE_FILE')
+
+android {
+    namespace 'ci.menelki.app'
+    compileSdk = 36
+
+    defaultConfig {
+        applicationId 'ci.menelki.app'
+        minSdk = 23
+        targetSdk = 36                       // Google Play exige 36 (Android 16) depuis le 31 août 2026
+        // Chaque envoi sur Google Play doit avoir un numéro plus grand que le précédent
+        versionCode = (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+        versionName = '1.0.0'
+        manifestPlaceholders = [hostName: 'meak-lond.github.io']
+    }
+
+    signingConfigs {
+        release {
+            if (cleFichier) {
+                storeFile file(cleFichier)
+                storePassword System.getenv('MENELKI_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('MENELKI_KEY_ALIAS')
+                keyPassword System.getenv('MENELKI_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (cleFichier) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}
