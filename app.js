@@ -720,6 +720,7 @@
     c.appendChild(ligne('users', 'Comptes sociaux', vueSocial));
     c.appendChild(el('div', 'esp-sep'));
     c.appendChild(ligne('logout', 'Se déconnecter', async function () { if (db) { await db.auth.signOut(); } fermerEspace(); }));
+    c.appendChild(ligne('trash', 'Supprimer mon compte', function () { window.location.href = 'suppression-compte.html'; }));
   }
 
   async function vueCommandes(apresPaiement) {

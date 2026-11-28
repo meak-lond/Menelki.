@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#050308">
+<title>Supprimer mon compte | MENELKI</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="legal.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="index.html"><img src="menelki-symbole-blanc.svg" alt=""><span>MENELKI</span></a>
+  <a class="retour" href="index.html">Retour à la boutique</a>
+</header>
+<main>
+<h1>Supprimer mon compte</h1>
+<p class="maj">Dernière mise à jour : 28 novembre 2026</p>
+<p>Cette page explique comment demander la suppression de ton compte MENELKI et des données qui y sont liées. Elle vaut pour le site et pour l'application Android MENELKI.</p>
+
+<h2>1. Comment faire la demande ?</h2>
+<ul>
+  <li>Écris-nous depuis l'adresse e-mail de ton compte, avec pour objet « Suppression de mon compte MENELKI ».</li>
+  <li>Ou envoie-nous un message WhatsApp en indiquant l'adresse e-mail de ton compte.</li>
+</ul>
+<a class="btn" id="btn-mail" href="#">Envoyer ma demande par e-mail</a>
+<a class="btn" id="btn-wa" href="#" style="display:none">Écrire sur WhatsApp</a>
+<p style="margin-top:14px">Nous pouvons te demander de confirmer ton identité. Ton compte est supprimé au plus tard sous un mois.</p>
+
+<h2>2. Ce qui est supprimé</h2>
+<ul>
+  <li>ton compte et ton accès à la boutique ;</li>
+  <li>ton profil : prénom, nom, date de naissance, centres d'intérêt, téléphone, carnet d'adresses ;</li>
+  <li>tes favoris et ton inscription à la newsletter.</li>
+</ul>
+
+<h2>3. Ce qui peut être conservé</h2>
+<p>Les informations de commande (articles, montant, paiement, livraison) peuvent être conservées le temps nécessaire à nos obligations comptables et légales et à la gestion des litiges. Elles ne servent à rien d'autre, puis elles sont supprimées.</p>
+
+<h2>4. Pour en savoir plus</h2>
+<p>Voir la <a href="confidentialite.html">politique de confidentialité</a>.</p>
+</main>
+
+<footer>
+  <a href="mentions-legales.html">Mentions légales</a>
+  <a href="conditions-de-vente.html">Conditions de vente</a>
+  <a href="cgu.html">CGU</a>
+  <a href="confidentialite.html">Confidentialité et RGPD</a>
+  <a href="suppression-compte.html">Supprimer mon compte</a>
+  <p>© 2026 MENELKI. Tous droits réservés</p>
+</footer>
+<script src="config.js?v=23"></script>
+<script src="legal.js"></script>
+<script>
+(function () {
+  var sujet = encodeURIComponent('Suppression de mon compte MENELKI');
+  var corps = encodeURIComponent("Bonjour,\nJe demande la suppression de mon compte MENELKI et des données liées.\nAdresse e-mail du compte : ");
+  var m = document.getElementById('btn-mail');
+  if (typeof CONTACT_EMAIL === 'string' && CONTACT_EMAIL) { m.href = 'mailto:' + CONTACT_EMAIL + '?subject=' + sujet + '&body=' + corps; } else { m.style.display = 'none'; }
+  var w = document.getElementById('btn-wa');
+  if (typeof CONTACT_WHATSAPP === 'string' && CONTACT_WHATSAPP) {
+    w.href = 'https://wa.me/' + CONTACT_WHATSAPP.replace(/\D/g, '') + '?text=' + sujet; w.style.display = 'inline-block';
+  }
+})();
+</script>
+</body>
+</html>
